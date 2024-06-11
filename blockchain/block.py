@@ -1,4 +1,5 @@
 
+from datetime import datetime, timedelta
 # class BlockHeader:
 
 #     def __init__(self):
@@ -29,7 +30,7 @@
 genesis_block = {
     'header': {
         'parent_hash': 'na_genesis_block',
-        'timestamp': 'na_genesis_block',
+        'timestamp': str(datetime.now() -timedelta(seconds=90)),
         'block_number': 0,
         'difficulty': 1,
         'beneficiary': 'na_genesis_block'},

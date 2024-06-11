@@ -1,4 +1,4 @@
-# from blockchain.blockchain_util import *
+from blockchain.blockchain_util import *
 from blockchain.block import genesis_block
 
 
@@ -23,6 +23,13 @@ class Blockchain:
         
         #  init blockchain with genesis block
         self.blockchain = [genesis_block,]
+        
+        
+    def appendBlock(self, block):
+        
+        if block_is_valid(self.blockchain[-1], block):
+            self.blockchain.append(block)
+        
 
   
 
