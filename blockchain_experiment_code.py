@@ -5,6 +5,7 @@ from blockchain.blockchain import Blockchain
 from blockchain.blockchain_util import *
 from blockchain.block import genesis_block
 import pprint
+import sys
 
 
 if __name__ == "__main__":
@@ -26,21 +27,20 @@ if __name__ == "__main__":
     # current_timestamp = parent_timestamp + relativedelta(seconds=90)
 
     # difficulty = adjust_difficulty(current_timestamp, parent_timestamp, 0)
-    
+
     # ---------------------------------------------------
-    
+
     blockchain = Blockchain()
-    
-    for i in range(3):
-        
+
+    for i in range(100):
+
         parent_block = blockchain.blockchain[-1]
-        
+
         new_block = mine(parent_block['header'], 'beneficiary')
-        
-        blockchain.appendBlock(new_block)
-        
-        
+
+        if not blockchain.append_block(new_block):
+            sys.exit()
+            
+
     print('\n')
-    pprint.pprint(blockchain.blockchain) 
-        
-        
+    pprint.pprint(blockchain.blockchain)

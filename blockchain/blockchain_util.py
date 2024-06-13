@@ -2,7 +2,8 @@
 
 from datetime import datetime
 # from dateutil.relativedelta import relativedelta
-import pprint
+from pprint import pprint
+import time
 
 import random
 
@@ -12,7 +13,7 @@ from Crypto.Hash import keccak
 
 MAX_HASH256_VALUE = int('f'*64, 16)
 
-MAX_NONCE_VALUE = 2 ** 128
+MAX_NONCE_VALUE = 2 ** 64
 
 # https://ethereumclassic.org/blog/2023-03-15-the-ethereum-classic-mining-difficulty-adjustment-explained
 IDEAL_BLOCK_TIME_SECONDS = 13
@@ -28,6 +29,8 @@ def preprocess_string(string):
 
 def generate_keccak256_hash(input_text):
     ''' generates Keccak256 hash'''
+    
+    # time.sleep(1)
 
     result = preprocess_string(input_text)
     hash_bin = keccak.new(data=result, digest_bits=256)
@@ -69,10 +72,13 @@ def adjust_difficulty(current_timestamp, parent_timestamp, parent_difficulty):
 def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_timestamp, parent_difficulty, beneficiary):
     ''' finds the hash for a new block which is a requirement for PoW 
     and returns the new block once hash is found'''
+    
+    print('"\n-----------Function _find_new_block_hash ----------"')
 
     while True:
 
         current_timestamp = datetime.now()
+        # print(f'current_timestamp = {current_timestamp}')
 
         # this is a partial new block header (without nonce)
         new_block_header = {
@@ -86,35 +92,47 @@ def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_time
             ),  # parent_header['difficulty'] + 1,  # temp solution
             'beneficiary': beneficiary
         }
+        
+        # print(f'*********new_block_header ')
+        # pprint(new_block_header)
 
         # generate the hash value for the new block header
         new_header_hash = generate_keccak256_hash(new_block_header)
+        # print(f'*********new_header_hush = {new_header_hash} ')
+        
 
         # calculate random nonce for PoW
         # See ref. p46 Mastering Ethereum Antonopoulos
         nonce = random.randint(0, MAX_NONCE_VALUE)
+        # print(f'*********nonce  = {nonce} ')
 
         # calcualate the hash value for a given timestamp and given nonce
         current_hash = generate_keccak256_hash(new_header_hash + str(nonce))
+        # print(f'*********current_hash = {current_hash} ')
 
         if (current_hash < target_hash):
-            print('\n')
-            print(f'---- Block # {new_block_number}')
-            print(f'hash {current_hash} < target_hash {target_hash}')
-            pprint.pprint(new_block_header)
-            pprint.pprint(f'nonce = {nonce}')
+            # print('\n')
+            # print(f'---- Block # {new_block_number}')
+            # print(f'hash {current_hash} < target_hash {target_hash}')
+            # pprint.pprint(new_block_header)
+            # pprint.pprint(f'nonce = {nonce}')
             
-            print('\n')
+            # print('\n')
             break
 
     # nonce is now added to the `new_block_header`
     new_block_header['nonce'] = nonce
+    
+    print ('New block:')
+    
+    new_block = {'header': new_block_header,'transactions': []}
+    pprint(new_block)
+    
+    
+    print('"\n-----------END of Function _find_new_block_hash ----------"')
 
     # return a new block
-    return {
-        'header': new_block_header,
-        'trasactions': []
-    }
+    return new_block
 
 
 def mine(parent_header, beneficiary):
@@ -188,18 +206,35 @@ def mine(parent_header, beneficiary):
 
 
 def pow_requirement_met(parent_header, child_header):
+    
+    print("\n-----------Function pow_requirement_met----------")
+    
+    print('***parent_header')
+    pprint(parent_header)
+    
+    print('\n*** child_header')
+    pprint(child_header)   
+    
 
     # calculate target hash for a given block
     target_hash = generate_target256_hash(parent_header['difficulty'])
-
+    print(f'target_hash = {target_hash}')
+    
     # extracting `nonce` from the child's header
     child_nonce = child_header['nonce']
+    print(f'child_nonce = {child_nonce}')
 
     #
-    reduced_child_header = child_header.copy().pop('nonce')
+    # reduced_child_header = child_header.copy().pop('nonce')
+    reduced_child_header = child_header.copy()
+    del reduced_child_header['nonce']
+    
+    print('\n*** reduced_child_header')
+    pprint(reduced_child_header)   
 
     #  calculate hash for the 
     reduced_child_hash = generate_keccak256_hash(reduced_child_header)
+    print(f'reduced_child_hash = {reduced_child_hash}')
 
     _hash = generate_keccak256_hash(reduced_child_hash + str(child_nonce))
 
@@ -214,13 +249,17 @@ def pow_requirement_met(parent_header, child_header):
         print(f'hash {_hash} > target hash {target_hash}')
         
         print('\n Parent block')
-        pprint.pprint(parent_header)
+        pprint(parent_header)
         
         print('\n Child block (failed to meet PoW requirement)')
-        pprint.pprint(child_header)
+        pprint(child_header)
         print('\n ===================================')
+        
+        print('"\n-----------End of Function pow_requirement_met----------"')
 
         return False
+    
+    print('"\n-----------End of Function pow_requirement_met----------"')
 
     return True
 

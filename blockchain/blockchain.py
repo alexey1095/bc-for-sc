@@ -25,10 +25,14 @@ class Blockchain:
         self.blockchain = [genesis_block,]
         
         
-    def appendBlock(self, block):
+    def append_block(self, block):
         
         if block_is_valid(self.blockchain[-1], block):
             self.blockchain.append(block)
+            return True
+        
+        return False
+            
         
 
   

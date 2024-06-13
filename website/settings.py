@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'blockchain',
-    'vm'
+    'pubsub',    
 ]
 
 MIDDLEWARE = [
