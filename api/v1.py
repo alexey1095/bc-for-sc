@@ -1,10 +1,9 @@
 from ninja import Router
 from blockchain.blockchain import Blockchain
 from blockchain.blockchain_util import mine
-
 router = Router()
-
 blockchain = Blockchain()
+
 
 @router.get('/')
 def show_hello(request):

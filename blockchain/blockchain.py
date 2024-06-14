@@ -1,6 +1,11 @@
 from blockchain.blockchain_util import *
 from blockchain.block import genesis_block
 
+from pubsub.pubsub import RedisPubSub
+from uuid import uuid1
+
+
+
 
 '''The goal is to setup  a decentralized computer;, this computer will be able to track state where the blockchain 
 is the core element as it stores transactions. Transactions 
@@ -23,6 +28,8 @@ class Blockchain:
         
         #  init blockchain with genesis block
         self.blockchain = [genesis_block,]
+        
+        self.redis = RedisPubSub(node_id=str(uuid1()))
         
         
     def append_block(self, block):
