@@ -1,6 +1,7 @@
 from ninja import Router
 from blockchain.blockchain import Blockchain
 from blockchain.blockchain_util import mine
+import json
 router = Router()
 blockchain = Blockchain()
 
@@ -23,7 +24,7 @@ def mine_block(request):
     
     parent_block = blockchain.blockchain[-1]
 
-    new_block = mine(parent_block['header'], 'beneficiary')
+    new_block = mine(parent_block['header'], 'beneficiary')  
 
     blockchain.append_block(new_block)
     

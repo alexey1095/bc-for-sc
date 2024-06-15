@@ -2,7 +2,8 @@ from blockchain.blockchain_util import *
 from blockchain.block import genesis_block
 
 from pubsub.pubsub import RedisPubSub
-from uuid import uuid1
+from uuid import uuid4
+import json
 
 
 
@@ -29,13 +30,22 @@ class Blockchain:
         #  init blockchain with genesis block
         self.blockchain = [genesis_block,]
         
-        self.redis = RedisPubSub(node_id=str(uuid1()))
+        self.redis = RedisPubSub(node_id=str(uuid4()))
         
         
     def append_block(self, block):
         
         if block_is_valid(self.blockchain[-1], block):
             self.blockchain.append(block)
+            
+             #  encoding to bytes for redis publish method
+            block_encoded =  json.dumps(block) #.encode('utf-8')
+            # str(block).encode('utf-8')
+            # print(block_encoded)
+            
+            # experimentation code
+            # self.redis.publish_block(b'new block publiched')
+            self.redis.publish_block(block_encoded)
             return True
         
         return False
