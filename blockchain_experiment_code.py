@@ -30,7 +30,8 @@ if __name__ == "__main__":
 
     # ---------------------------------------------------
 
-    blockchain = Blockchain()
+    blockchain = Blockchain(peer_url='http://127.0.0.1:8080') #/api/v1/blockchain')
+    blockchain.get_blockchain()
 
     for i in range(100):
 

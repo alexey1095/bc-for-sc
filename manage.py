@@ -3,6 +3,8 @@
 import os
 import sys
 
+# from api.v1 import blockchain
+
 
 def main():
     """Run administrative tasks."""
@@ -16,6 +18,7 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
+    # blockchain.get_blockchain()
 
 
 if __name__ == '__main__':

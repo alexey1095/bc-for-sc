@@ -12,11 +12,12 @@ class Channel(Enum):
 
 class RedisPubSub():
 
-    def __init__(self, node_id):
+    def __init__(self, node_id, parent):
 
         self.node_id = node_id
         self.redis = StrictRedis(host='localhost', port=6379)
         self.reader = self.redis.pubsub()
+        self.blockchain = parent
 
         # self.channels = ['dev', 'block', 'blockchain']
         self.subscribe()
@@ -42,8 +43,31 @@ class RedisPubSub():
             return False
 
         for channel in Channel:
-            self.reader.psubscribe(
-                **{'*:' + f'{channel.value}': self._message_handler})
+            self.reader.psubscribe(**{'*:' + f'{channel.value}': self._message_handler})
+            # self.reader.psubscribe(**{'*:' + f'{channel.value}': self.parent.redis_handler})
+            
+            
+    def _process_received_payload(self, channel, payload):
+        
+        match channel:
+
+            case Channel.DEV.value:
+                #print(Channel.DEV.value)
+                return
+
+            case Channel.BLOCK.value:
+                #print(Channel.BLOCK.value)
+                # self.parent.redis_block_channel_handler(payload)
+                self.blockchain.append_block(payload)
+                return
+
+            case Channel.BLOCKCHAIN.value:
+                #print(Channel.BLOCKCHAIN.value)
+                return
+
+            case _:
+                print('Error: Unknown channel')
+                
 
     def _message_handler(self, msg):
         ''' Process received message
@@ -85,20 +109,14 @@ class RedisPubSub():
             print('Error: Message received in unknown format ')
             print(msg)
             return
+        
+        
+        self._process_received_payload(channel, dict_msg_data)
 
-        match channel:
-
-            case Channel.DEV.value:
-                print(Channel.DEV.value)
-
-            case Channel.BLOCK.value:
-                print(Channel.BLOCK.value)
-
-            case Channel.BLOCKCHAIN.value:
-                print(Channel.BLOCKCHAIN.value)
-
-            case _:
-                print('Error: Unknown channel')
+      
+                
+                
+                
 
     def publish_dev(self, msg):
         self.redis.publish(channel=f'{self.node_id}:dev', message=msg)

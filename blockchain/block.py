@@ -30,7 +30,7 @@ from datetime import datetime, timedelta
 genesis_block = {
     'header': {
         'parent_hash': 'na_genesis_block',
-        'timestamp': str(datetime.now() -timedelta(seconds=90)),
+        'timestamp': '2024-06-15 20:27:12.440884', #str(datetime.now() -timedelta(seconds=90)),
         'block_number': 0,
         'difficulty': 3,
         'beneficiary': 'na_genesis_block',

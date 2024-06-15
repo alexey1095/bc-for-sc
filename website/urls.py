@@ -26,3 +26,4 @@ urlpatterns = [
     path('', views.index),
     path('api/', api.urls),
 ]
+
