@@ -40,13 +40,12 @@ def synchronize_blockchain(request):
 
     try:
         response = blockchain.synchronize(
-            peer_url='http://127.0.0.1:8080/api/v1/blockchain')
+            peer_url='http://127.0.0.1:8000/api/v1/blockchain')
 
         status = blockchain.update_blockchain(response)
 
         if status:
             return blockchain.blockchain
-
         else:
             return "ERROR: FAILS TO UPDATE THE BLOCKCHAIN"
 

@@ -90,13 +90,15 @@ class Blockchain:
         # update  local version of the blockchain with the 
         # latest version, this is typicall done as a part 
         # of the synchronization process
-        
-        # print(f'\nupdate_blockchain method = {blockchain}')
+                
+        #  no need to update the upcoming blockchain consists of only one genesis block
+        if len(blockchain) == 1:
+            return True
         
         for index, block in enumerate(blockchain):
             
-            if index == 0:
-                continue
+            # if index == 0:
+            #     continue
             
             
             if not block_is_valid(blockchain[index-1], block):
