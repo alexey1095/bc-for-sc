@@ -1,6 +1,6 @@
 from django.test import TestCase
-
-from account.account import Account
+from pprint import pprint
+from account.account import Account, TransactionType
 
 
 class AccountTests(TestCase):
@@ -18,7 +18,7 @@ class AccountTests(TestCase):
         
         sig = self.account.generate_signature(self.message)
         
-        res = self.account.verify_signature(self.account.address, self.message, sig)
+        res = self.account.signature_is_valid(self.account.address, self.message, sig)
         
         self.assertEqual(res, True)
         
@@ -29,9 +29,60 @@ class AccountTests(TestCase):
         
         invalid_message = 'invalid_message'
         
-        res = self.account.verify_signature(self.account.address, invalid_message, sig)
+        res = self.account.signature_is_valid(self.account.address, invalid_message, sig)
         
         self.assertEqual(res, False)
+        
+        
+    def test_generate_currency_transacion(self):
+        
+        t = self.account.generate_transaction(
+            transact_type=TransactionType.CURRENCY_TRANSACTION,
+            to='somebody',amount=1000,data='test_data')
+    
+    
+        pprint(t)
+        
+        
+    def test_generate_account_transacion(self):
+        
+        t = self.account.generate_transaction(
+            transact_type=TransactionType.NEW_ACCOUNT_TRANSACTION,
+            amount=1000)
+    
+    
+        pprint(t)
+        
+        
+    def test_verify_valid_currency_transacion(self):
+        
+        t = self.account.generate_transaction(
+            transact_type=TransactionType.CURRENCY_TRANSACTION,
+            amount=1000)
+        
+        status = self.account.currency_transaction_is_valid(t)
+        
+        self.assertEqual(status, True)
+        
+        
+    def test_verify_invalid_currency_transacion(self):
+        
+        t = self.account.generate_transaction(
+            transact_type=TransactionType.CURRENCY_TRANSACTION,
+            amount=1000)
+        
+        #  re-write one of the field `amount` of the transaction with
+        # a wrong data
+        t['body']['amount'] = 10
+        
+        status = self.account.currency_transaction_is_valid(t)
+        
+        self.assertEqual(status, False)
+        
+        
+    
+    
+       
         
         
     # def test_verify_valid_signature_for_same_date_with_different_formatting(self):

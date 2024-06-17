@@ -1,5 +1,7 @@
 from enum import Enum
 
+# from account.account import 
+
 '''Transactions will serve two overall purposes. The first one is to excgange currency between accounts.
 
 Transactions will change the state of the decentralized computer - 
@@ -18,4 +20,16 @@ class TransactionType(Enum):
 class Transaction:
 
     def __init__(self):
-        pass
+        
+        
+        transact = {
+            'body':{
+                'type':None,
+                'from':None,
+                'to': None,
+                'amount': None,
+                'data': None  
+                
+            },
+            'signature':None
+        }

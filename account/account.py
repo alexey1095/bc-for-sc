@@ -1,8 +1,16 @@
+from enum import Enum
+from uuid import uuid4
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
 from cryptography.exceptions import InvalidSignature
 from blockchain.blockchain import preprocess_string
+
+
+class TransactionType(Enum):
+
+    CURRENCY_TRANSACTION = 'CURRENCY_TRANSACTION'
+    NEW_ACCOUNT_TRANSACTION = 'NEW_ACCOUNT_TRANSACTION'
 
 
 class Account:
@@ -21,9 +29,9 @@ class Account:
         self.balance = 100000
 
     def generate_signature(self, data):
-        
+
         result = preprocess_string(data)
-        
+
         # print('\n generate signature - intermediate steps ')
         # print(f'preprocessed string{data}')
         # print(result)
@@ -32,8 +40,8 @@ class Account:
 
         return signature
 
-    def verify_signature(self, public_key_hex, data, signature):
-        
+    def signature_is_valid(self, public_key_hex, data, signature):
+
         result = preprocess_string(data)
 
         public_key_bytes = bytes.fromhex(public_key_hex)
@@ -48,6 +56,40 @@ class Account:
 
         return True
 
+    def generate_transaction(self, transact_type, to=None, amount=None, data=None):
+
+        body = {
+            'id': str(uuid4()),
+            'type': transact_type.name,
+            'from': self.address,
+            'to': to,
+            'amount': amount,
+            'data': data
+        }
+
+        if transact_type == TransactionType.CURRENCY_TRANSACTION:
+            signature = self.generate_signature(body)
+        else:
+            signature = None
+
+        return {
+            'body': body,
+            'signature': signature
+        }
+
+    def currency_transaction_is_valid(self, transaction):
+
+        # from_public_key = transaction['body']['from']
+
+        if self.signature_is_valid(
+            public_key_hex=transaction['body']['from'],
+            data=transaction['body'],
+            signature=transaction['signature']
+        ):
+            return True
+
+        return False
+
 
 # if __name__ == "__main__":
 
@@ -59,14 +101,14 @@ class Account:
 
 #     print('signature:')
 #     print(sig)
-    
-    
+
+
 #     #  example valid signature
 #     res = account.verify_signature(account.address, str.encode(txt), sig)
 
 #     print(res)
-    
-    
+
+
 #     txt1='ssssss'
 
 #     #  example invalid signature
@@ -74,4 +116,8 @@ class Account:
 
 #     print(res)
 
-   
+    # t = account.generate_transaction(
+    #     transact_type=TransactionType.CURRENCY_TRANSACTION,
+    #     to='somebody',amount=1000,data='test_data')
+
+    # print(t)
