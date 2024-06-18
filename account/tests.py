@@ -80,9 +80,40 @@ class AccountTests(TestCase):
         self.assertEqual(status, False)
         
         
+    def test_add_currency_transaction_to_pool(self):
+        
+        t = self.account.generate_transaction(
+            transact_type=TransactionType.CURRENCY_TRANSACTION,
+            amount=1000)
+        
+        self.account.add_transaction_to_pool(t)
+        
+        print('Transaction pool')
+        
+        pprint(self.account.transaction_pool)
+        
+        
+        self.assertEqual(len(self.account.transaction_pool), 1)
+        
+        
+    def test_add_account_transaction_to_pool(self):
+        
+        t = self.account.generate_transaction(
+            transact_type=TransactionType.NEW_ACCOUNT_TRANSACTION,
+            amount=1000)
+        
+        self.account.add_transaction_to_pool(t)
+        
+        print('Transaction pool')
+        
+        pprint(self.account.transaction_pool)
+        
+        
+        self.assertEqual(len(self.account.transaction_pool), 1)
+        
     
     
-       
+#  -------------------------------------------------------------------------------
         
         
     # def test_verify_valid_signature_for_same_date_with_different_formatting(self):

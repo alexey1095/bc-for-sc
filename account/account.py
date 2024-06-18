@@ -28,6 +28,8 @@ class Account:
 
         self.balance = 100000
 
+        self.transaction_pool = {}
+
     def generate_signature(self, data):
 
         result = preprocess_string(data)
@@ -56,11 +58,14 @@ class Account:
 
         return True
 
+    
     def generate_transaction(self, transact_type, to=None, amount=None, data=None):
 
+        # txtx = transact_type.name
+        
         body = {
             'id': str(uuid4()),
-            'type': transact_type.name,
+            'type': transact_type,
             'from': self.address,
             'to': to,
             'amount': amount,
@@ -89,6 +94,14 @@ class Account:
             return True
 
         return False
+
+    def add_transaction_to_pool(self, transaction):
+
+        self.transaction_pool[transaction['body']['id']] = transaction
+
+    def return_transaction_pool(self):
+
+        return self.transaction_pool
 
 
 # if __name__ == "__main__":

@@ -1,11 +1,45 @@
 from ninja import Router
+from ninja import Schema
 from blockchain.blockchain import Blockchain
+from account.account import Account
+from account.account import TransactionType
 from blockchain.blockchain_util import mine
 import json
 router = Router()
 
 blockchain = Blockchain()
 # blockchain.get_blockchain()
+
+#  create an account
+account = Account()
+account.generate_transaction(account)
+
+
+# https://medium.com/@marcnealer/django-ninja-the-contender-217b80b0e1e7
+class Transaction(Schema):
+    type: str
+    to: str
+    amount: int
+
+
+@router.post('/transaction', description="Creates a transaction")
+def create_new_transaction(request, transaction: Transaction):
+
+    try:
+        t_type = TransactionType[transaction.type]
+    except Exception as e:
+        return {"Error": "wrong transaction type",
+                "Message": str(e)}
+
+    tt = account.generate_transaction(
+        transact_type=t_type,
+        to=transaction.to,
+        amount=transaction.amount
+    )
+    
+    # ss = json.dumps(tt)
+
+    return str(tt)
 
 
 @router.get('/')
@@ -27,7 +61,10 @@ def mine_block(request):
 
     parent_block = blockchain.blockchain[-1]
 
-    new_block = mine(parent_block['header'], 'beneficiary')
+    new_block = mine(
+        parent_header=parent_block['header'],
+        beneficiary=account.address
+    )
 
     blockchain.append_block(new_block)
 
