@@ -24,7 +24,7 @@ class Blockchain:
     Each block acts as a storage unit and store a series of transactions.
     '''
 
-    def __init__(self):
+    def __init__(self, account):
 
         #  init blockchain with genesis block
         self.blockchain = [genesis_block,]
@@ -34,8 +34,12 @@ class Blockchain:
 
         #  unique randomly generated node's id
         self.node_id = str(uuid4())
+        
+        self.account = account
 
-        self.redis = RedisPubSub(node_id=self.node_id, parent=self)
+        self.redis = RedisPubSub(node_id=self.node_id, blockchain=self, account=self.account)
+        
+       
 
     # def redis_block_channel_handler(self, payload):
     #     ''' this is a callback function from the `RedisPubSub` class fro the `BLOCK` channel'''
@@ -67,7 +71,7 @@ class Blockchain:
                    
         return response.json()
 
-    def append_block(self, block):
+    def append_block(self, block, notify=True):
         ''' appends a valid new block to the blockchain '''
 
         if not block_is_valid(self.blockchain[-1], block):
@@ -79,8 +83,11 @@ class Blockchain:
         #  encoding to bytes for redis publish method
         block_encoded = json.dumps(block)
 
-        # publish a new block on the `BLOCK` channel
-        self.redis.publish_block(block_encoded)
+        # publish a new block on the `BLOCK` channel only if the block 
+        #  is created by the given node - we dont want to publish when
+        #  block was broadcasted
+        if notify:
+            self.redis.publish_block(block_encoded)
 
         print("\n >>>>>>>>>>> BLOCK HAS BEEN ADDED TO BLOCKCHAIN <<<<<<<<<<<")
 

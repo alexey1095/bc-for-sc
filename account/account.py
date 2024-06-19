@@ -58,29 +58,45 @@ class Account:
 
         return True
 
-    
-    def generate_transaction(self, transact_type, to=None, amount=None, data=None):
+    def generate_transaction(self, to, amount=None, data=None):
 
         # txtx = transact_type.name
+
+        if to:            
         
-        body = {
-            'id': str(uuid4()),
-            'type': transact_type,
-            'from': self.address,
-            'to': to,
-            'amount': amount,
-            'data': data
-        }
+            transact_type = TransactionType.CURRENCY_TRANSACTION.name
 
-        if transact_type == TransactionType.CURRENCY_TRANSACTION:
+            body = {
+                'id': str(uuid4()),
+                'type': transact_type,
+                'from': self.address,
+                'to': to,
+                'amount': amount,
+                'data': data
+            }
             signature = self.generate_signature(body)
-        else:
-            signature = None
 
-        return {
-            'body': body,
-            'signature': signature
-        }
+            return {
+                'body': body,
+                'signature': signature
+            }
+
+        else:
+        
+            transact_type = TransactionType.NEW_ACCOUNT_TRANSACTION.name
+
+            body = {
+                'id': str(uuid4()),
+                'type': transact_type,
+                'address': self.address,
+                'balance': self.balance
+            }
+
+            return {
+                'body': body,
+            }
+
+   
 
     def currency_transaction_is_valid(self, transaction):
 
@@ -102,6 +118,14 @@ class Account:
     def return_transaction_pool(self):
 
         return self.transaction_pool
+    
+    def remove_transactions_added_to_block(self, transactions):
+        ''' we want to remove those transactions from transaction pool
+        that have been added to the block already'''
+        
+        for t in transactions:
+            del self.transaction_pool[t]
+        
 
 
 # if __name__ == "__main__":

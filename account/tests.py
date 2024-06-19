@@ -37,8 +37,8 @@ class AccountTests(TestCase):
     def test_generate_currency_transacion(self):
         
         t = self.account.generate_transaction(
-            transact_type=TransactionType.CURRENCY_TRANSACTION,
-            to='somebody',amount=1000,data='test_data')
+            to='some_address',
+            amount=1000,data='test_data')
     
     
         pprint(t)
@@ -47,7 +47,7 @@ class AccountTests(TestCase):
     def test_generate_account_transacion(self):
         
         t = self.account.generate_transaction(
-            transact_type=TransactionType.NEW_ACCOUNT_TRANSACTION,
+            to='some_address',
             amount=1000)
     
     
@@ -57,7 +57,7 @@ class AccountTests(TestCase):
     def test_verify_valid_currency_transacion(self):
         
         t = self.account.generate_transaction(
-            transact_type=TransactionType.CURRENCY_TRANSACTION,
+            to='some_address',
             amount=1000)
         
         status = self.account.currency_transaction_is_valid(t)
@@ -68,7 +68,7 @@ class AccountTests(TestCase):
     def test_verify_invalid_currency_transacion(self):
         
         t = self.account.generate_transaction(
-            transact_type=TransactionType.CURRENCY_TRANSACTION,
+            to='some_address',
             amount=1000)
         
         #  re-write one of the field `amount` of the transaction with
@@ -83,7 +83,7 @@ class AccountTests(TestCase):
     def test_add_currency_transaction_to_pool(self):
         
         t = self.account.generate_transaction(
-            transact_type=TransactionType.CURRENCY_TRANSACTION,
+            to="some_address",
             amount=1000)
         
         self.account.add_transaction_to_pool(t)
@@ -99,7 +99,7 @@ class AccountTests(TestCase):
     def test_add_account_transaction_to_pool(self):
         
         t = self.account.generate_transaction(
-            transact_type=TransactionType.NEW_ACCOUNT_TRANSACTION,
+            to = 'some_address',            
             amount=1000)
         
         self.account.add_transaction_to_pool(t)

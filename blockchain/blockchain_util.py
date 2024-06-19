@@ -69,7 +69,7 @@ def adjust_difficulty(current_timestamp, parent_timestamp, parent_difficulty):
     return reduced_difficulty
 
 
-def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_timestamp, parent_difficulty, beneficiary):
+def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_timestamp, parent_difficulty, beneficiary, transaction_root_hash):
     ''' finds the hash for a new block which is a requirement for PoW 
     and returns the new block once hash is found'''
 
@@ -90,7 +90,8 @@ def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_time
                 parent_timestamp,
                 parent_difficulty
             ),  # parent_header['difficulty'] + 1,  # temp solution
-            'beneficiary': beneficiary
+            'beneficiary': beneficiary,
+            'transaction_root': transaction_root_hash
         }
 
         # print(f'*********new_block_header ')
@@ -133,7 +134,7 @@ def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_time
     return new_block
 
 
-def mine(parent_header, beneficiary):
+def mine(parent_header, beneficiary, transactions):
     ''' mines a block by spending a CPU power to find a valid block by solving 
     a cryptographic puzzle. Proof of work difficulty determines the rate of 
     how quickly the puzzle can be solved to ensure that the blocks are added 
@@ -162,8 +163,12 @@ def mine(parent_header, beneficiary):
     # calculate the next block number
     new_block_number = parent_header['block_number'] + 1
 
+    transaction_root_hash = generate_keccak256_hash(transactions)
+
     new_block = _find_new_block_hash(
-        target_hash, parent_hash, new_block_number, parent_timestamp, parent_difficulty, beneficiary)
+        target_hash, parent_hash, new_block_number, parent_timestamp,
+        parent_difficulty, beneficiary, transaction_root_hash
+    )
 
     return new_block
 
@@ -298,7 +303,7 @@ def child_block_has_correct_parent_hash(parent_header, child_header):
         )
         print(f'Parent hash retrieved from child block {
             parent_header['block_number']} = {child_header['parent_hash']}')
-        
+
         print(f'Calculated parent hash = {parent_block_hash}')
         return False
 
@@ -327,7 +332,7 @@ def delta_difference_equal_one(parent_header, child_header):
 
 
 def block_is_valid(parent_block, child_block):
-    
+
     print('\n***** BLOCK VALIDATION *****')
 
     # check if there is a parent -child relationship between blocks

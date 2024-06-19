@@ -2,22 +2,25 @@ from enum import Enum
 from redis import StrictRedis
 from pprint import pprint
 import ast
+from account.account import Account
 
 
 class Channel(Enum):
     DEV = 'dev'
     BLOCK = 'block'
     BLOCKCHAIN = 'blockchain'
+    TRANSACTION = 'transaction'
 
 
 class RedisPubSub():
 
-    def __init__(self, node_id, parent):
+    def __init__(self, node_id, blockchain, account):
 
         self.node_id = node_id
         self.redis = StrictRedis(host='localhost', port=6379)
         self.reader = self.redis.pubsub()
-        self.blockchain = parent
+        self.blockchain = blockchain
+        self.account = account
 
         # self.channels = ['dev', 'block', 'blockchain']
         self.subscribe()
@@ -58,11 +61,19 @@ class RedisPubSub():
             case Channel.BLOCK.value:
                 #print(Channel.BLOCK.value)
                 # self.parent.redis_block_channel_handler(payload)
-                self.blockchain.append_block(payload)
+                self.blockchain.append_block(payload, notify=False)
                 return
 
             case Channel.BLOCKCHAIN.value:
                 #print(Channel.BLOCKCHAIN.value)
+                return
+            
+            case Channel.TRANSACTION.value:
+                
+                #  this should be only for the transactions generated externally
+                
+                self.account.add_transaction_to_pool(payload)
+                
                 return
 
             case _:
@@ -123,6 +134,10 @@ class RedisPubSub():
 
     def publish_block(self, msg):
         self.redis.publish(channel=f'{self.node_id}:block', message=msg)
+        
+    def publish_transaction(self, msg):
+        self.redis.publish(channel=f'{self.node_id}:transaction', message=msg)
+        
 
     def close(self):
         self.thread.stop()
