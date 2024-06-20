@@ -69,7 +69,10 @@ def adjust_difficulty(current_timestamp, parent_timestamp, parent_difficulty):
     return reduced_difficulty
 
 
-def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_timestamp, parent_difficulty, beneficiary, transaction_root_hash):
+def _find_new_block_hash(
+    target_hash, parent_hash, new_block_number, 
+    parent_timestamp, parent_difficulty, 
+    beneficiary, transaction_root_hash, transactions):
     ''' finds the hash for a new block which is a requirement for PoW 
     and returns the new block once hash is found'''
 
@@ -125,7 +128,7 @@ def _find_new_block_hash(target_hash, parent_hash, new_block_number, parent_time
 
     print('New block:')
 
-    new_block = {'header': new_block_header, 'transactions': []}
+    new_block = {'header': new_block_header, 'transactions': transactions.copy()}
     pprint(new_block)
 
     print('"\n-----------END of Function _find_new_block_hash ----------"')
@@ -167,7 +170,7 @@ def mine(parent_header, beneficiary, transactions):
 
     new_block = _find_new_block_hash(
         target_hash, parent_hash, new_block_number, parent_timestamp,
-        parent_difficulty, beneficiary, transaction_root_hash
+        parent_difficulty, beneficiary, transaction_root_hash, transactions
     )
 
     return new_block

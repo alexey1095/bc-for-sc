@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
 from cryptography.exceptions import InvalidSignature
 from blockchain.blockchain import preprocess_string
+from pprint import pprint
 
 
 class TransactionType(Enum):
@@ -40,7 +41,7 @@ class Account:
 
         signature = self.private_key.sign(result, ec.ECDSA(hashes.SHA256()))
 
-        return signature
+        return signature.hex()
 
     def signature_is_valid(self, public_key_hex, data, signature):
 
@@ -49,9 +50,11 @@ class Account:
         public_key_bytes = bytes.fromhex(public_key_hex)
 
         public_key_der = serialization.load_der_public_key(public_key_bytes)
+        
+        signature_bytes = bytes.fromhex(signature)
 
         try:
-            public_key_der.verify(signature, result, ec.ECDSA(hashes.SHA256()))
+            public_key_der.verify(signature_bytes, result, ec.ECDSA(hashes.SHA256()))
 
         except InvalidSignature:
             return False
@@ -112,19 +115,35 @@ class Account:
         return False
 
     def add_transaction_to_pool(self, transaction):
+        
+        # https://stackoverflow.com/questions/24804453/how-can-i-copy-a-python-string
+        transaction_id = (transaction['body']['id']+'.')[:-1]
 
-        self.transaction_pool[transaction['body']['id']] = transaction
+        self.transaction_pool[transaction_id] = transaction.copy()
 
     def return_transaction_pool(self):
 
         return self.transaction_pool
     
-    def remove_transactions_added_to_block(self, transactions):
+    def remove_transactions_added_to_block(self, transactions_added_to_block):
         ''' we want to remove those transactions from transaction pool
         that have been added to the block already'''
         
-        for t in transactions:
-            del self.transaction_pool[t]
+        
+        print('\n function remove_transactions_added_to_block()')
+        
+        pprint(transactions_added_to_block)
+        
+        # del self.transaction_pool[t]
+        
+        for t in transactions_added_to_block:
+            # print('\n inside for loop')        
+            # pprint(transactions_added_to_block)
+            print('print t:'+ t)
+            if t in self.transaction_pool:
+                # del self.transaction_pool[t]
+                self.transaction_pool.pop(t)
+                print(t)
         
 
 

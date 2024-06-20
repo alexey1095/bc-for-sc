@@ -62,7 +62,7 @@ class Foo(TestCase):
 
     def test_mine_block(self):
 
-        new_block = mine(genesis_block['header'], 'beneficiary')
+        new_block = mine(genesis_block['header'], 'beneficiary',transactions=[])
 
         self.assertIs(type(new_block), dict)
 

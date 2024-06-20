@@ -2,7 +2,7 @@ from enum import Enum
 from redis import StrictRedis
 from pprint import pprint
 import ast
-from account.account import Account
+# from account.account import Account
 
 
 class Channel(Enum):

@@ -18,8 +18,8 @@ class TestValidateBlock(TestCase):
         # }
         
         
-        self.new_block1 = mine(genesis_block['header'], 'beneficiary')
-        self.new_block2 = mine(self.new_block1['header'], 'beneficiary')
+        self.new_block1 = mine(genesis_block['header'], 'beneficiary',transactions=[])
+        self.new_block2 = mine(self.new_block1['header'], 'beneficiary', transactions=[])
         
         
       

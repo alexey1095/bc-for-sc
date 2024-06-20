@@ -67,11 +67,21 @@ def create_new_transaction(request, transaction: Transaction):
     
     account.add_transaction_to_pool(tt)
     
-    blockchain.redis.publish_transaction(tt)
+    # tt_encoded = json.dumps(tt)
+    tt_encoded = str(tt)
+    
+    blockchain.redis.publish_transaction(tt_encoded)
     
     # ss = json.dumps(tt)
 
-    return str(tt)
+    return (tt)
+
+
+@router.get('/transaction', description="Show transaction pool")
+def show_transaction(request):
+    
+    return account.transaction_pool
+
 
 
 @router.get('/')

@@ -79,6 +79,13 @@ class Blockchain:
             return False
 
         self.blockchain.append(block)
+        
+        #  once the block is added we want to remove those transactions from 
+        #  the transaction pool
+        
+        self.account.remove_transactions_added_to_block(block['transactions'])
+        
+        
 
         #  encoding to bytes for redis publish method
         block_encoded = json.dumps(block)
@@ -104,8 +111,8 @@ class Blockchain:
         
         for index, block in enumerate(blockchain):
             
-            # if index == 0:
-            #     continue
+            if index == 0:
+                continue
             
             
             if not block_is_valid(blockchain[index-1], block):

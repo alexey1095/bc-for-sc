@@ -1,12 +1,13 @@
 import requests
 from pprint import pprint
 
-url = 'http://127.0.0.1:8000'
+url_main = 'http://127.0.0.1:8000'
 
+url_peer = 'http://127.0.0.1:8001'
 
 def send_transaction(t):
 
-    res = requests.post(url+"/api/v1/transaction", json=t, timeout=1)
+    res = requests.post(url_main+"/api/v1/transaction", json=t, timeout=1)
 
     print("\n")
     pprint(res)
@@ -16,7 +17,16 @@ def send_transaction(t):
     
 def request_mine():
     
-    res = requests.get(url+"/api/v1/mine", timeout=1)
+    res = requests.get(url_main+"/api/v1/mine", timeout=1)
+    
+    print("\n")
+    pprint(res)
+    pprint(res.json())
+    
+    
+def request_synchronize():
+    
+    res = requests.get(url_peer+"/api/v1/synchronize", timeout=1)
     
     print("\n")
     pprint(res)

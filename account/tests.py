@@ -1,6 +1,6 @@
 from django.test import TestCase
 from pprint import pprint
-from account.account import Account, TransactionType
+from account.account import Account
 
 
 class AccountTests(TestCase):
