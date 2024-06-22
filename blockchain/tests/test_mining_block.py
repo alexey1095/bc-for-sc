@@ -20,11 +20,10 @@ class Foo(TestCase):
             'nonce': 'test_nonce',
             'number': 1
         }
-      
+
     def test_preprocess_string1(self):
         ''' test that the output string is equal to the expected output'''
-        
-        
+
         string = "{'key1':'val1', 'key2':'val2'}"
 
         res = preprocess_string(string)
@@ -62,7 +61,8 @@ class Foo(TestCase):
 
     def test_mine_block(self):
 
-        new_block = mine(genesis_block['header'], 'beneficiary',transactions=[])
+        new_block = mine(genesis_block['header'],
+                         'beneficiary', transactions=[])
 
         self.assertIs(type(new_block), dict)
 
@@ -74,7 +74,7 @@ class Foo(TestCase):
         difficulty = adjust_difficulty(current_timestamp, parent_timestamp, 0)
 
         self.assertEqual(difficulty, 1)
-        
+
     def test_increase_difficulty_when_duration_lt_ideal_time(self):
 
         parent_timestamp = datetime.now()
@@ -83,8 +83,7 @@ class Foo(TestCase):
         difficulty = adjust_difficulty(current_timestamp, parent_timestamp, 1)
 
         self.assertEqual(difficulty, 2)
-        
-        
+
     def test_decrease_difficulty_when_duration_gt_ideal_time(self):
 
         parent_timestamp = datetime.now()
@@ -93,6 +92,3 @@ class Foo(TestCase):
         difficulty = adjust_difficulty(current_timestamp, parent_timestamp, 5)
 
         self.assertEqual(difficulty, 4)
-        
-    
-    

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'pubsub',
     'account',
     'transactions',
+    'state',
     # "debug_toolbar",    
 ]
 

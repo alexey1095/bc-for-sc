@@ -13,6 +13,9 @@ class Channel(Enum):
 
 
 class RedisPubSub():
+    
+    # this is a simplified implementastion of
+    #  Zhiqin Zhu - Blockchain based consensus checking in decentralized cloud storage
 
     def __init__(self, node_id, blockchain, account):
 
