@@ -39,17 +39,32 @@ class State():
 
         to_balance += amount
 
-        self._update_account_balance(address=from_address, balance=from_balance)
+        self._update_account_balance(
+            address=from_address, balance=from_balance)
 
         self._update_account_balance(address=to_address, balance=to_balance)
 
     def _process_new_account_transaction(self, transaction):
-        ''' add a new account to the state'''        
-                
+        ''' add a new account to the state'''
+
         self._update_account_balance(
-            address=transaction['body']['address'], 
+            address=transaction['body']['address'],
             balance=transaction['body']['balance']
-            )
+        )
+
+    def _process_block_reward_transaction(self, transaction):
+        ''' add a new block reward trannsaction to state'''
+
+        beneficiary_address = transaction['body']['to']
+
+        beneficiary_balance = self._retrieve_account_balance(
+            beneficiary_address)
+
+        reward = transaction['body']['amount']
+
+        beneficiary_balance += reward
+
+        self._update_account_balance(beneficiary_address, beneficiary_balance)
 
     def _process_transaction(self, transaction):
         ''' Update the state of the system by processing the sent transaction'''
@@ -64,21 +79,19 @@ class State():
                 return
 
             case TransactionType.NEW_ACCOUNT_TRANSACTION.name:
-
                 self._process_new_account_transaction(transaction)
+                return
 
+            case TransactionType.BLOCK_REWARD_TRANSACTION.name:
+                self._process_block_reward_transaction(transaction)
                 return
 
             case _:
                 raise ValueError(
                     'Error: def process_transaction -- unknown transaction type ' + transaction_type)
-                
-                
+
     def process_block(self, block):
         ''' update the state by processing the sent block'''
-        
+
         for id, body in block['transactions'].items():
             self._process_transaction(body)
-            
-        
-        

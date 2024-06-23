@@ -18,10 +18,10 @@ from pprint import pprint
 
 router = Router()
 
-
-account = Account()
-
 state = State()
+
+account = Account(state)
+
 
 blockchain = Blockchain(account, state)
 # blockchain.get_blockchain()
@@ -61,7 +61,10 @@ def start(request):
     
     new_account_transaction = account.generate_transaction(to=None)
 
-    account.add_transaction_to_pool(new_account_transaction)
+    if not account.add_transaction_to_pool(new_account_transaction):
+        return {
+            'Error':'Transaction is not valid',
+            'Details':new_account_transaction}
 
     # pprint(new_account_transaction)
     
@@ -106,7 +109,11 @@ def create_new_transaction(request, transaction: Transaction):
 
     pprint(tt)
 
-    account.add_transaction_to_pool(tt)
+    if not account.add_transaction_to_pool(tt):
+        return {
+            'Error':'Transaction is not valid',
+            'Details':tt}
+
 
     # tt_encoded = json.dumps(tt)
     tt_encoded = str(tt)

@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Type
 from uuid import uuid4
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -7,6 +8,7 @@ from cryptography.exceptions import InvalidSignature
 from blockchain.blockchain import preprocess_string
 from pprint import pprint
 from . transaction_types import TransactionType
+from state.state import State
 
 
 # class TransactionType(Enum):
@@ -17,7 +19,7 @@ from . transaction_types import TransactionType
 
 class Account:
 
-    def __init__(self):
+    def __init__(self, state: Type[State]):
 
         self.private_key = ec.generate_private_key(ec.SECP256K1())
         self.public_key = self.private_key.public_key()
@@ -31,6 +33,8 @@ class Account:
         self.balance = 100000
 
         self.transaction_pool = {}
+
+        self.state = state
 
     def generate_signature(self, data):
 
@@ -51,11 +55,12 @@ class Account:
         public_key_bytes = bytes.fromhex(public_key_hex)
 
         public_key_der = serialization.load_der_public_key(public_key_bytes)
-        
+
         signature_bytes = bytes.fromhex(signature)
 
         try:
-            public_key_der.verify(signature_bytes, result, ec.ECDSA(hashes.SHA256()))
+            public_key_der.verify(signature_bytes, result,
+                                  ec.ECDSA(hashes.SHA256()))
 
         except InvalidSignature:
             return False
@@ -66,8 +71,8 @@ class Account:
 
         # txtx = transact_type.name
 
-        if to:            
-        
+        if to:
+
             transact_type = TransactionType.CURRENCY_TRANSACTION.name
 
             body = {
@@ -86,7 +91,7 @@ class Account:
             }
 
         else:
-        
+
             transact_type = TransactionType.NEW_ACCOUNT_TRANSACTION.name
 
             body = {
@@ -100,54 +105,88 @@ class Account:
                 'body': body,
             }
 
-   
-
     def currency_transaction_is_valid(self, transaction):
 
         # from_public_key = transaction['body']['from']
 
-        if self.signature_is_valid(
+        #  check the balances
+
+        address_from = transaction['body']['from']
+        address_to = transaction['body']['to']
+        balance_to = self.state._retrieve_account_balance(address_to)
+
+        amount_to_be_sent = transaction['body']['amount']
+
+        if not balance_to:
+            print({
+                'Error': 'Account `to` is not defined in the state',
+                'Address': address_to
+            })
+
+            return False
+
+        balance_from = self.state._retrieve_account_balance(address_from)
+
+        if balance_from < amount_to_be_sent:
+
+            print({
+                'Error': 'Transaction validation failed - signature is not valid',
+                'Details': transaction
+            })
+
+            return False
+
+        if not self.signature_is_valid(
             public_key_hex=transaction['body']['from'],
             data=transaction['body'],
             signature=transaction['signature']
         ):
-            return True
+            print({
+                'Error': 'Transaction validation failed - signature is not valid',
+                'Details': transaction
+            })
+            return False
 
-        return False
+        return True
 
     def add_transaction_to_pool(self, transaction):
-        
+
         # https://stackoverflow.com/questions/24804453/how-can-i-copy-a-python-string
         transaction_id = (transaction['body']['id']+'.')[:-1]
 
+        transaction_type = transaction['body']['type']
+
+        if transaction_type == TransactionType.CURRENCY_TRANSACTION.name:
+            if not self.currency_transaction_is_valid(transaction):
+                return False
+        # elif transaction_type == TransactionType.NEW_ACCOUNT_TRANSACTION.name:
+
         self.transaction_pool[transaction_id] = transaction.copy()
+
+        return True
 
     def return_transaction_pool(self):
 
         return self.transaction_pool
-    
+
     def remove_transactions_added_to_block(self, transactions_added_to_block):
         ''' we want to remove those transactions from transaction pool
         that have been added to the block already'''
-        
-        
+
         print('\n function remove_transactions_added_to_block()')
-        
+
         pprint(transactions_added_to_block)
-        
+
         # del self.transaction_pool[t]
-        
+
         for t in transactions_added_to_block:
-            # print('\n inside for loop')        
+            # print('\n inside for loop')
             # pprint(transactions_added_to_block)
-            print('print t:'+ t)
+            print('print t:' + t)
             if t in self.transaction_pool:
                 # del self.transaction_pool[t]
                 self.transaction_pool.pop(t)
                 print(t)
-                
-                
-    
 
 
 # if __name__ == "__main__":

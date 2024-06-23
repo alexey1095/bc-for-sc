@@ -4,6 +4,9 @@ from datetime import datetime
 # from dateutil.relativedelta import relativedelta
 from pprint import pprint
 import time
+from uuid import uuid4
+
+from account.transaction_types import TransactionType
 
 import random
 
@@ -70,9 +73,9 @@ def adjust_difficulty(current_timestamp, parent_timestamp, parent_difficulty):
 
 
 def _find_new_block_hash(
-    target_hash, parent_hash, new_block_number, 
-    parent_timestamp, parent_difficulty, 
-    beneficiary, transaction_root_hash, transactions, state_root):
+        target_hash, parent_hash, new_block_number,
+        parent_timestamp, parent_difficulty,
+        beneficiary, transaction_root_hash, transactions, state_root):
     ''' finds the hash for a new block which is a requirement for PoW 
     and returns the new block once hash is found'''
 
@@ -92,11 +95,11 @@ def _find_new_block_hash(
             #     current_timestamp,
             #     parent_timestamp,
             #     parent_difficulty
-            # ),  
+            # ),
             'difficulty': parent_difficulty + 1,  # temp solution
             'beneficiary': beneficiary,
             'transaction_root': transaction_root_hash,
-            'state_root':state_root
+            'state_root': state_root
         }
 
         # print(f'*********new_block_header ')
@@ -130,7 +133,8 @@ def _find_new_block_hash(
 
     print('New block:')
 
-    new_block = {'header': new_block_header, 'transactions': transactions.copy()}
+    new_block = {'header': new_block_header,
+                 'transactions': transactions.copy()}
     pprint(new_block)
 
     print('"\n-----------END of Function _find_new_block_hash ----------"')
@@ -169,7 +173,6 @@ def mine(parent_header, beneficiary, transactions, state_root):
     new_block_number = parent_header['block_number'] + 1
 
     transaction_root_hash = generate_keccak256_hash(transactions)
-    
 
     new_block = _find_new_block_hash(
         target_hash, parent_hash, new_block_number, parent_timestamp,
@@ -179,6 +182,22 @@ def mine(parent_header, beneficiary, transactions, state_root):
     return new_block
 
 
+def _add_block_reward_transaction(transactions, beneficiary, block_reward_amount):
+
+    body = {
+        'id': str(uuid4()),
+        'type': TransactionType.BLOCK_REWARD_TRANSACTION.name,
+        'to': beneficiary,
+        'amount': block_reward_amount
+    }
+
+    # https://stackoverflow.com/questions/24804453/how-can-i-copy-a-python-string
+    transaction_id = (body['id']+'.')[:-1]
+
+    trx = {'body': body}
+
+    transactions[transaction_id] = trx.copy()
+
 
 def mine_block(blockchain, account, state):
 
@@ -186,8 +205,14 @@ def mine_block(blockchain, account, state):
     # blockchain.append_block(new_block)
 
     parent_block = blockchain.blockchain[-1]
-    
+
     transactions = account.return_transaction_pool()
+
+    # Adding the block reward transactions
+    _add_block_reward_transaction(
+        transactions=transactions,
+        beneficiary=account.address,
+        block_reward_amount=blockchain.block_reward)
 
     new_block = mine(
         parent_header=parent_block['header'],

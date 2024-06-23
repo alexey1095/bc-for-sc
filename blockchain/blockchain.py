@@ -43,6 +43,8 @@ class Blockchain:
         
         self.state = state
         
+        self.block_reward = 100
+        
        
 
     # def redis_block_channel_handler(self, payload):
@@ -93,7 +95,7 @@ class Blockchain:
 
     def append_block(self, block, notify=True):
         ''' appends a valid new block to the blockchain '''
-
+                
         if not block_is_valid(self.blockchain[-1], block):
             print('\n ERROR: VALIDATION FAILED - BLOCK HAS BEEN REJECTED BY BLOCKCHAIN')
             return False

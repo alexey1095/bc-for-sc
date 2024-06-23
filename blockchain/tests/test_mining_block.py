@@ -2,6 +2,7 @@ from django.test import TestCase
 from datetime import datetime, timedelta
 from blockchain.lib import *
 from blockchain.block import genesis_block
+from state.state import State
 
 # //from .block import BlockPOW
 
@@ -11,6 +12,8 @@ from blockchain.block import genesis_block
 class Foo(TestCase):
 
     def setUp(self):
+        
+        self.state =State()
 
         self.block_header = {
             'parent_hash': 'test_hash',
@@ -62,7 +65,7 @@ class Foo(TestCase):
     def test_mine_block(self):
 
         new_block = mine(genesis_block['header'],
-                         'beneficiary', transactions=[])
+                         'beneficiary', transactions=[],state_root=self.state)
 
         self.assertIs(type(new_block), dict)
 

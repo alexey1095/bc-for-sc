@@ -2,6 +2,7 @@ from django.test import TestCase
 from datetime import datetime, timedelta
 from blockchain.lib import *
 from blockchain.block import genesis_block
+from state.state import State
 
 
 class TestValidateBlock(TestCase):
@@ -17,9 +18,11 @@ class TestValidateBlock(TestCase):
         #     'number': 1
         # }
         
+        self.state = State()
         
-        self.new_block1 = mine(genesis_block['header'], 'beneficiary',transactions=[])
-        self.new_block2 = mine(self.new_block1['header'], 'beneficiary', transactions=[])
+        
+        self.new_block1 = mine(genesis_block['header'], 'beneficiary',transactions=[],state_root=self.state)
+        self.new_block2 = mine(self.new_block1['header'], 'beneficiary', transactions=[], state_root=self.state)
         
         
       
