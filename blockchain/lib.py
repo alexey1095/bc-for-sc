@@ -72,7 +72,7 @@ def adjust_difficulty(current_timestamp, parent_timestamp, parent_difficulty):
 def _find_new_block_hash(
     target_hash, parent_hash, new_block_number, 
     parent_timestamp, parent_difficulty, 
-    beneficiary, transaction_root_hash, transactions):
+    beneficiary, transaction_root_hash, transactions, state_root):
     ''' finds the hash for a new block which is a requirement for PoW 
     and returns the new block once hash is found'''
 
@@ -88,13 +88,15 @@ def _find_new_block_hash(
             'parent_hash': parent_hash,
             'timestamp': str(current_timestamp),
             'block_number': new_block_number,
-            'difficulty': adjust_difficulty(
-                current_timestamp,
-                parent_timestamp,
-                parent_difficulty
-            ),  # parent_header['difficulty'] + 1,  # temp solution
+            # 'difficulty': adjust_difficulty(
+            #     current_timestamp,
+            #     parent_timestamp,
+            #     parent_difficulty
+            # ),  
+            'difficulty': parent_difficulty + 1,  # temp solution
             'beneficiary': beneficiary,
-            'transaction_root': transaction_root_hash
+            'transaction_root': transaction_root_hash,
+            'state_root':state_root
         }
 
         # print(f'*********new_block_header ')
@@ -137,7 +139,7 @@ def _find_new_block_hash(
     return new_block
 
 
-def mine(parent_header, beneficiary, transactions):
+def mine(parent_header, beneficiary, transactions, state_root):
     ''' mines a block by spending a CPU power to find a valid block by solving 
     a cryptographic puzzle. Proof of work difficulty determines the rate of 
     how quickly the puzzle can be solved to ensure that the blocks are added 
@@ -167,13 +169,36 @@ def mine(parent_header, beneficiary, transactions):
     new_block_number = parent_header['block_number'] + 1
 
     transaction_root_hash = generate_keccak256_hash(transactions)
+    
 
     new_block = _find_new_block_hash(
         target_hash, parent_hash, new_block_number, parent_timestamp,
-        parent_difficulty, beneficiary, transaction_root_hash, transactions
+        parent_difficulty, beneficiary, transaction_root_hash, transactions, state_root
     )
 
     return new_block
+
+
+
+def mine_block(blockchain, account, state):
+
+    # new_block = mine(blockchain.blockchain[-1], 'beneficiary')
+    # blockchain.append_block(new_block)
+
+    parent_block = blockchain.blockchain[-1]
+    
+    transactions = account.return_transaction_pool()
+
+    new_block = mine(
+        parent_header=parent_block['header'],
+        beneficiary=account.address,
+        transactions=transactions,
+        state_root=state.get_root_hash()
+    )
+
+    blockchain.append_block(new_block)
+
+    return blockchain.blockchain
 
     # while True:
 
@@ -371,6 +396,27 @@ def block_is_valid(parent_block, child_block):
 
     print('***** BLOCK IS VALID  **********')
     return True
+
+
+# def synchronize_blockchain(blockchain, url):
+#     ''' synchronizing the local blockchain with the latest version of the blockchain'''
+
+#     try:
+#         response = blockchain.synchronize(
+#             peer_url=url)
+
+#         status = blockchain.update_blockchain(response)
+
+#         if status:
+#             return blockchain.blockchain
+#         else:
+#             return "ERROR: FAILS TO UPDATE THE BLOCKCHAIN"
+
+#     except ValueError as e:
+#         return e
+
+# def process_transaction(transaction, state):
+#     pass
 
 
 # if __name__ == "__main__":

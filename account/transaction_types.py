@@ -1,0 +1,6 @@
+from enum import Enum
+
+class TransactionType(Enum):
+
+    CURRENCY_TRANSACTION = 'CURRENCY_TRANSACTION'
+    NEW_ACCOUNT_TRANSACTION = 'NEW_ACCOUNT_TRANSACTION'

@@ -6,12 +6,13 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.exceptions import InvalidSignature
 from blockchain.blockchain import preprocess_string
 from pprint import pprint
+from . transaction_types import TransactionType
 
 
-class TransactionType(Enum):
+# class TransactionType(Enum):
 
-    CURRENCY_TRANSACTION = 'CURRENCY_TRANSACTION'
-    NEW_ACCOUNT_TRANSACTION = 'NEW_ACCOUNT_TRANSACTION'
+#     CURRENCY_TRANSACTION = 'CURRENCY_TRANSACTION'
+#     NEW_ACCOUNT_TRANSACTION = 'NEW_ACCOUNT_TRANSACTION'
 
 
 class Account:
@@ -61,7 +62,7 @@ class Account:
 
         return True
 
-    def generate_transaction(self, to, amount=None, data=None):
+    def generate_transaction(self, to, amount=0, data={}):
 
         # txtx = transact_type.name
 
@@ -144,7 +145,9 @@ class Account:
                 # del self.transaction_pool[t]
                 self.transaction_pool.pop(t)
                 print(t)
-        
+                
+                
+    
 
 
 # if __name__ == "__main__":

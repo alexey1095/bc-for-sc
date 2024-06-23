@@ -1,6 +1,6 @@
 from django.test import TestCase
 from datetime import datetime, timedelta
-from blockchain.blockchain_util import *
+from blockchain.lib import *
 from blockchain.block import genesis_block
 
 

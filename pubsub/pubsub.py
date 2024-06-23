@@ -1,7 +1,11 @@
 from enum import Enum
+from typing import Type
 from redis import StrictRedis
 from pprint import pprint
 import ast
+
+# from blockchain.blockchain import Blockchain
+# from account.account import Account
 # from account.account import Account
 
 
@@ -17,6 +21,7 @@ class RedisPubSub():
     # this is a simplified implementastion of
     #  Zhiqin Zhu - Blockchain based consensus checking in decentralized cloud storage
 
+    # def __init__(self, node_id, blockchain:Type[Blockchain], account:Type[Account]):
     def __init__(self, node_id, blockchain, account):
 
         self.node_id = node_id
@@ -96,12 +101,18 @@ class RedisPubSub():
 
             channel_key_processed = msg['channel'].decode(
                 'utf-8').split(':', 1)
+            
+            print("\nchannel_key_processed " )
+            print(channel_key_processed)
 
             #  node name obtained from the message
             node_name = channel_key_processed[0]
+            print("\nnode_name "+node_name )
 
             #  channel name obtained from the message
             channel = channel_key_processed[1]
+            print("\nchannel "+channel )
+            
 
             #  we do not want to process own message published by the node so just exit
             if node_name == self.node_id:
@@ -118,10 +129,12 @@ class RedisPubSub():
             pprint(dict_msg_data)
             print('***** END OF MESSAGE *****')
 
-        except ValueError:
+        except ValueError as e:
             #  this is for the case when the received message happens to be not in the standard format
-            print('Error: Message received in unknown format ')
-            print(msg)
+            print('\nError: pubsub -- Message received in unknown format \n')
+            pprint(msg)
+            print('\n')            
+            print(e)
             return
         
         

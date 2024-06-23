@@ -35,7 +35,8 @@ genesis_block = {
         'difficulty': 3,
         'beneficiary': 'na_genesis_block',
         'nonce': 0,
-        'transactions_root':'na_genesis_block'
+        'transactions_root':'na_genesis_block',
+        'state_root':'na_genesis_block'
         },
     
     'transactions': []

@@ -38,21 +38,21 @@ if __name__ == "__main__":
 
 
 #  1-----------------------------------------------
-    # t = {       
-    #     "to": "some address to",
-    #     "amount": 100
-    # }
+    t = {       
+        "to": "some address to",
+        "amount": 100
+    }
 
-    # send_transaction(t)
+    send_transaction(t)
 
-    # t = {
-    #     "to": "",
-    #     "amount": 0 # here can be any valid integer number (for ninja schema to work)
-    # }
+    t = {
+        "to": "",
+        "amount": 0 # here can be any valid integer number (for ninja schema to work)
+    }
 
-    # send_transaction(t)
+    send_transaction(t)
 
 
 # 2 -----------------------------------------------
 
-    request_mine()
+    # request_mine()

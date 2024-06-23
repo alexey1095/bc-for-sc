@@ -1,10 +1,12 @@
 from uuid import uuid4
+from typing import Type
 import json
 import requests
-from blockchain.blockchain_util import *
+from blockchain.lib import *
 from blockchain.block import genesis_block
 
 from pubsub.pubsub import RedisPubSub
+from state.state import State
 
 
 '''The goal is to setup  a decentralized computer;, this computer will be able to track state where the blockchain 
@@ -24,7 +26,7 @@ class Blockchain:
     Each block acts as a storage unit and store a series of transactions.
     '''
 
-    def __init__(self, account):
+    def __init__(self, account, state:Type[State]):
 
         #  init blockchain with genesis block
         self.blockchain = [genesis_block,]
@@ -39,6 +41,8 @@ class Blockchain:
 
         self.redis = RedisPubSub(node_id=self.node_id, blockchain=self, account=self.account)
         
+        self.state = state
+        
        
 
     # def redis_block_channel_handler(self, payload):
@@ -47,11 +51,11 @@ class Blockchain:
     #     print("this is redis handler from Blockchain class")
     #     pprint(payload)
 
-    def synchronize(self, peer_url):
+    def _synchronize(self, peer_url):
         ''' getting the latest version of the blockchain '''
 
         try:
-            response = requests.get(peer_url)
+            response = requests.get(peer_url, timeout=1)
             response.raise_for_status()
 
             # print('HTTP reponse :')
@@ -70,6 +74,22 @@ class Blockchain:
             raise ValueError (f'Blockchain Synchronization Error {e}') from e 
                    
         return response.json()
+    
+    
+    def synchronize_blockchain(self, url):
+        try:
+            response = self._synchronize(
+                peer_url=url)
+
+            status = self.update_blockchain(response)           
+
+            if status:
+                return self.blockchain
+            else:
+                return "ERROR: FAILS TO UPDATE THE BLOCKCHAIN"
+
+        except ValueError as e:
+            return e
 
     def append_block(self, block, notify=True):
         ''' appends a valid new block to the blockchain '''
@@ -79,6 +99,14 @@ class Blockchain:
             return False
 
         self.blockchain.append(block)
+        
+        
+        # update state by processing the block        
+        self.state.process_block(block)
+        
+        
+        
+        # state.
         
         #  once the block is added we want to remove those transactions from 
         #  the transaction pool
@@ -104,6 +132,14 @@ class Blockchain:
         # update  local version of the blockchain with the 
         # latest version, this is typicall done as a part 
         # of the synchronization process
+        
+        #  check if we need to update the blockchain
+        hash_existing_blockchain = generate_keccak256_hash(self.blockchain)
+        hash_sent_blockchain = generate_keccak256_hash(blockchain)
+        
+        if hash_existing_blockchain == hash_sent_blockchain:
+            print("\n -- No need to synchronize the blockchain ")
+            return True
                 
         #  no need to update the upcoming blockchain consists of only one genesis block
         if len(blockchain) == 1:
@@ -119,8 +155,13 @@ class Blockchain:
                 print('\n ERROR: VALIDATION FAILED - BLOCK HAS BEEN REJECTED BY BLOCKCHAIN')
                 print('++++++ LOCAL BLOCKCHAIN HAS NOT BEEN UPDATED +++++++')
                 return False
+            
+            #  update the state by processing a block
+            self.state.process_block(block)
         
         self.blockchain = blockchain
+        
+        
         print('\n++++++ LOCAL BLOCKCHAIN HAS BEEN UPDATED +++++++\n')
         return True
             

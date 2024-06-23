@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from blockchain.blockchain import Blockchain
-from blockchain.blockchain_util import *
+from blockchain.lib import *
 from blockchain.block import genesis_block
 import pprint
 import sys

@@ -1,4 +1,5 @@
-from blockchain.blockchain_util import generate_keccak256_hash
+import copy
+from blockchain.lib import generate_keccak256_hash
 
 
 class Trie():
@@ -30,10 +31,14 @@ class Trie():
             # for both cases when child has existed or just been created
             # we make `child` to be a new `current_node`
             current_node = current_node[child]
-
+            
         #  once the we reache the end of the branch
         #  create a key `value` and assign the send value to it
         current_node['value'] = value
+        
+        #  adopted from here 
+        #  https://stackoverflow.com/questions/5105517/deep-copy-of-a-dict-in-python
+        self.root = copy.deepcopy(self.root)
 
         #  generate hash of trie
         self.root_hash = generate_keccak256_hash(self.root)
