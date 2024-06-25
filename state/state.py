@@ -66,6 +66,30 @@ class State():
 
         self._update_account_balance(beneficiary_address, beneficiary_balance)
 
+    def _update_state_new_shipment(self, transaction):
+        ''' Update state by adding a new shipment '''
+
+        self.state_trie.store(
+            key=transaction['body']['id'],
+            value=transaction['body']
+        )
+        
+        
+    def _update_state_currency_blocking(self, transaction):
+        ''' Update state by adding currency blocking transaction '''
+        
+        buyer_address = transaction['body']['buyer']
+
+        buyer_balance = self._retrieve_account_balance(
+            buyer_address)
+
+        amount_to_block = transaction['body']['amount']
+
+        buyer_balance -= amount_to_block
+        
+        
+        
+
     def _process_transaction(self, transaction):
         ''' Update the state of the system by processing the sent transaction'''
 
@@ -84,6 +108,14 @@ class State():
 
             case TransactionType.BLOCK_REWARD_TRANSACTION.name:
                 self._process_block_reward_transaction(transaction)
+                return
+
+            case TransactionType.CREATE_SHIPMENT_TRANSACTION.name:
+                self._update_state_new_shipment(transaction)
+                return
+            
+            case TransactionType.CURRENCY_BLOCKING_TRANSACTION.name:
+                self._update_state_currency_blocking(transaction)
                 return
 
             case _:

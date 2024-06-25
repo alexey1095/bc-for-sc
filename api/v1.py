@@ -55,33 +55,32 @@ blockchain = Blockchain(account, state)
 @router.get('/start', description="start")
 def start(request):
     ''' We need to call this end point to properly setup the accounts'''
-    
-    
+
     print(f'\nAccount address: {account.address}\n')
-    
-    new_account_transaction = account.generate_transaction(to=None)
+
+    # new_account_transaction = account.generate_transaction(to=None)
+
+    new_account_transaction = account.generate_account_transaction()
 
     if not account.add_transaction_to_pool(new_account_transaction):
         return {
-            'Error':'Transaction is not valid',
-            'Details':new_account_transaction}
+            'Error': 'Transaction is not valid',
+            'Details': new_account_transaction}
 
     # pprint(new_account_transaction)
-    
+
     #  we need to synchronize the blockchain before mining any blocks to avoid errors
-    blockchain.synchronize_blockchain('http://127.0.0.1:8000/api/v1/blockchain')
+    blockchain.synchronize_blockchain(
+        'http://127.0.0.1:8000/api/v1/blockchain')
 
     # we need to publish a message before mining a block for the peer to correctly remove transaction from pool
     new_account_transaction_encoded = json.dumps(new_account_transaction)
     blockchain.redis.publish_transaction(msg=new_account_transaction_encoded)
-    
+
     # we need to call mine block here to add a new account to the state
     res = mine_block(blockchain, account, state)
 
-    
     return blockchain.blockchain
-    
-
 
 
 # https://medium.com/@marcnealer/django-ninja-the-contender-217b80b0e1e7
@@ -99,7 +98,14 @@ def create_new_transaction(request, transaction: Transaction):
     #     return {"Error": "wrong transaction type",
     #             "Message": str(e)}
 
-    tt = account.generate_transaction(
+    # tt = account.generate_transaction(
+
+    #     to=transaction.to,
+    #     amount=transaction.amount
+
+    # )
+
+    tt = account.generate_currency_transaction(
 
         to=transaction.to,
         amount=transaction.amount
@@ -111,9 +117,8 @@ def create_new_transaction(request, transaction: Transaction):
 
     if not account.add_transaction_to_pool(tt):
         return {
-            'Error':'Transaction is not valid',
-            'Details':tt}
-
+            'Error': 'Transaction is not valid',
+            'Details': tt}
 
     # tt_encoded = json.dumps(tt)
     tt_encoded = str(tt)
@@ -123,6 +128,74 @@ def create_new_transaction(request, transaction: Transaction):
     # ss = json.dumps(tt)
 
     return (tt)
+
+
+class CreateShipment(Schema):
+    vendor: str    
+    product_description: str
+    qty: int
+    price: int
+    contract_number: str
+    # action: str  # create_shipment, confirm_shipment, confirm_delivery
+
+
+@router.post('/create_shipment', description="Creates a transaction")
+def create_shipment_api_end_point(request, shipment: CreateShipment):
+
+   
+    #  create new shipment transaction
+    txn_shipment = account.generate_new_shipment_transaction(
+        vendor=shipment.vendor,
+        buyer=account.address,
+        product_description=shipment.product_description,
+        qty=shipment.qty,
+        price=shipment.price,
+        contract_number=shipment.contract_number
+        )
+    
+    if not account.add_transaction_to_pool(txn_shipment):
+        return {
+            'Error': 'Transaction is not valid',
+            'Details': txn_shipment}
+    blockchain.redis.publish_transaction(str(txn_shipment))
+    
+    # generate currency blocking txn            
+    txn_blocking= account.generate_currency_blocking_transaction(
+        amount=shipment.price,
+        ref_txn_id = txn_shipment['body']['id'])
+    
+    #  adding blocking transaction to transaction pool and publish
+    
+    if not account.add_transaction_to_pool(txn_blocking):
+        return {
+            'Error': 'Transaction is not valid',
+            'Details': txn_blocking}
+      
+    blockchain.redis.publish_transaction(str(txn_blocking))
+
+    return ([txn_shipment, txn_blocking])
+
+
+    # tt = account.generate_currency_transaction(
+    #     to=transaction.to,
+    #     amount=transaction.amount
+    # )
+
+    # pprint(tt)
+
+    # if not account.add_transaction_to_pool(tt):
+    #     return {
+    #         'Error': 'Transaction is not valid',
+    #         'Details': tt}
+
+    # # tt_encoded = json.dumps(tt)
+    # tt_encoded = str(tt)
+
+    # blockchain.redis.publish_transaction(tt_encoded)
+
+    # # ss = json.dumps(tt)
+
+    # return (tt)
 
 
 @router.get('/transaction', description="Show transaction pool")
@@ -169,8 +242,9 @@ def mine_block_request(request):
 @router.get('/synchronize')
 def synchronize_blockchain_request(request):
     ''' synchronizing the local blockchain with the latest version of the blockchain'''
-    
-    blockchain.synchronize_blockchain('http://127.0.0.1:8000/api/v1/blockchain')
+
+    blockchain.synchronize_blockchain(
+        'http://127.0.0.1:8000/api/v1/blockchain')
 
     # try:
     #     response = blockchain.synchronize(
@@ -195,6 +269,6 @@ def show_state(request):
 @router.get('/account')
 def show_account(request):
     return {
-        'address':account.address,
-        'balance':state._retrieve_account_balance(account.address)
-        }
+        'address': account.address,
+        'balance': state._retrieve_account_balance(account.address)
+    }

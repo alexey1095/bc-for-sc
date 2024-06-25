@@ -9,6 +9,7 @@ from blockchain.blockchain import preprocess_string
 from pprint import pprint
 from . transaction_types import TransactionType
 from state.state import State
+from shipment.shipment_status import ShipmentStatus
 
 
 # class TransactionType(Enum):
@@ -67,43 +68,178 @@ class Account:
 
         return True
 
-    def generate_transaction(self, to, amount=0, data={}):
+    # def generate_transaction(self, to, amount=0, data={}):
 
-        # txtx = transact_type.name
+    #     # txtx = transact_type.name
 
-        if to:
+    #     if to:
 
-            transact_type = TransactionType.CURRENCY_TRANSACTION.name
+    #         transact_type = TransactionType.CURRENCY_TRANSACTION.name
 
-            body = {
-                'id': str(uuid4()),
-                'type': transact_type,
-                'from': self.address,
-                'to': to,
-                'amount': amount,
-                'data': data
+    #         body = {
+    #             'id': str(uuid4()),
+    #             'type': transact_type,
+    #             'from': self.address,
+    #             'to': to,
+    #             'amount': amount,
+    #             'data': data
+    #         }
+    #         signature = self.generate_signature(body)
+
+    #         return {
+    #             'body': body,
+    #             'signature': signature
+    #         }
+
+    #     else:
+
+    #         transact_type = TransactionType.NEW_ACCOUNT_TRANSACTION.name
+
+    #         body = {
+    #             'id': str(uuid4()),
+    #             'type': transact_type,
+    #             'address': self.address,
+    #             'balance': self.balance
+    #         }
+
+    #         return {
+    #             'body': body,
+    #         }
+
+    def generate_currency_transaction(self, to, amount, data=None):
+        ''' Generate a currency transaction '''
+
+        if data is None:
+            data = {}
+
+        body = {
+            'id': str(uuid4()),
+            'type': TransactionType.CURRENCY_TRANSACTION.name,
+            'from': self.address,
+            'to': to,
+            'amount': amount,
+            'data': data
+        }
+        signature = self.generate_signature(body)
+
+        return {
+            'body': body,
+            'signature': signature
+        }
+
+    def generate_currency_blocking_transaction(self, amount, ref_txn_id):
+        ''' Generate a blocking transaction - this is called by the buyer therefore the 
+        '''
+        body = {
+            'id': str(uuid4()),
+            'type': TransactionType.CURRENCY_BLOCKING_TRANSACTION.name,
+            'buyer': self.address,
+            'amount': amount,
+            'ref_txn_id': ref_txn_id
+        }
+        signature = self.generate_signature(body)
+
+        return {
+            'body': body,
+            'signature': signature
+        }
+
+    def generate_account_transaction(self):
+        ''' Generate a transaction to create a new account'''
+
+        body = {
+            'id': str(uuid4()),
+            'type': TransactionType.NEW_ACCOUNT_TRANSACTION.name,
+            'address': self.address,
+            'balance': self.balance
+        }
+
+        return {
+            'body': body,
+        }
+
+    # def create_new_shipment(self, vendor, buyer,
+    #                         product_description,
+    #                         qty,
+    #                         price, contract_number):
+
+    #     #  NOTE: this will need to be moved to `api`
+
+    #     # check if both buyer and vendor exit in `state`
+    #     buyer_balance = self.state._retrieve_account_balance(buyer)
+
+    #     if not buyer_balance:
+    #         print('Error: -- create_new_shipment')
+    #         print(f'Buyer does not exist in state - address: {buyer}')
+    #         return False
+
+    #     if not self.state._retrieve_account_balance(vendor):
+    #         print('Error: -- create_new_shipment')
+    #         print(f'Vendor does not exist in state - address: {vendor}')
+    #         return False
+
+    #     #  check if `buyer` has enough money
+    #     if buyer_balance < price:
+    #         print('Error: -- create_new_shipment')
+    #         print(f'Buyer does not have enough money to create a new shipemnt - balance: {
+    #               buyer_balance} - address: {buyer}')
+    #         return False
+
+    #     self._generate_new_shipment_transaction(
+    #         vendor=vendor,
+    #         buyer=buyer,
+    #         product_description=product_description,
+    #         qty=qty,
+    #         price=price,
+    #         contract_number=contract_number
+    #     )
+
+    #    if not account.add_transaction_to_pool(tt):
+#         return {
+#             'Error':'Transaction is not valid',
+#             'Details':tt}
+
+
+#     # tt_encoded = json.dumps(tt)
+#     tt_encoded = str(tt)
+
+#     blockchain.redis.publish_transaction(tt_encoded)
+
+        # return True
+
+    def generate_new_shipment_transaction(self, vendor, buyer,
+                                          product_description,
+                                          qty,
+                                          price,
+                                          contract_number):
+        ''' Generate a transaction to create a new shipment'''
+
+        body = {
+            'id': str(uuid4()),
+            'type': TransactionType.CREATE_SHIPMENT_TRANSACTION.name,
+            'vendor': vendor,
+            'buyer': buyer,
+            'status': ShipmentStatus.CREATED.name,
+            'previous_shipment': 'origin',
+            'data': {
+                'product_description': product_description,
+                'qty': qty,
+
+                # `price` is the amount that will be deducted from
+                # the buyer account and stored in the system until
+                #  delivery is confirmed
+                'price': price,
+
+                'contract_number': contract_number
             }
-            signature = self.generate_signature(body)
+        }
 
-            return {
-                'body': body,
-                'signature': signature
-            }
+        signature = self.generate_signature(body)
 
-        else:
-
-            transact_type = TransactionType.NEW_ACCOUNT_TRANSACTION.name
-
-            body = {
-                'id': str(uuid4()),
-                'type': transact_type,
-                'address': self.address,
-                'balance': self.balance
-            }
-
-            return {
-                'body': body,
-            }
+        return {
+            'body': body,
+            'signature': signature
+        }
 
     def currency_transaction_is_valid(self, transaction):
 
@@ -148,6 +284,66 @@ class Account:
             return False
 
         return True
+    
+    def currency_blocking_transaction_is_valid(self, transaction):
+        
+        buyer = transaction['body']['buyer']        
+        amount = transaction['body']['amount']
+
+        # check if vendor exits in `state` (we do not need to check the buyer because this point is called by buyer)
+        buyer_balance = self.state._retrieve_account_balance(buyer)        
+
+        if buyer_balance < amount:
+            return {
+                'ERROR': f'Buyer does not have enough money to create to block  - balance: {
+                    buyer_balance} - address: {buyer}'}
+            
+        if not self.signature_is_valid(
+            public_key_hex=buyer,
+            data=transaction['body'],
+            signature=transaction['signature']
+            ):
+            print({
+                'Error': 'Transaction validation failed - signature is not valid',
+                'Details': transaction
+            })
+            return False
+        
+        return True
+        
+
+    def create_shipment_transaction_is_valid(self, transaction):
+
+        buyer = transaction['body']['buyer']
+        vendor = transaction['body']['vendor']
+        price = transaction['body']['data']['price']
+
+        # check if vendor exits in `state` (we do not need to check the buyer because this point is called by buyer)
+        buyer_balance = self.state._retrieve_account_balance(buyer)
+
+        if not buyer_balance:
+            print({'ERROR': f'Buyer does not exist in state - address: {buyer}'})
+
+        if not self.state._retrieve_account_balance(vendor):
+            return {'ERROR': f'Vendor does not exist in state - address: {vendor}'}
+
+        if buyer_balance < price:
+            return {
+                'ERROR': f'Buyer does not have enough money to create a new shipemnt - balance: {
+                    buyer_balance} - address: {price}'}
+            
+        if not self.signature_is_valid(
+            public_key_hex=buyer,
+            data=transaction['body'],
+            signature=transaction['signature']
+            ):
+            print({
+                'Error': 'Transaction validation failed - signature is not valid',
+                'Details': transaction
+            })
+            return False
+        
+        return True
 
     def add_transaction_to_pool(self, transaction):
 
@@ -156,14 +352,52 @@ class Account:
 
         transaction_type = transaction['body']['type']
 
-        if transaction_type == TransactionType.CURRENCY_TRANSACTION.name:
-            if not self.currency_transaction_is_valid(transaction):
-                return False
-        # elif transaction_type == TransactionType.NEW_ACCOUNT_TRANSACTION.name:
+        # if transaction_type == TransactionType.CURRENCY_TRANSACTION.name:
+        #     if not self.currency_transaction_is_valid(transaction):
+        #         return False
+        # # elif transaction_type == TransactionType.NEW_ACCOUNT_TRANSACTION.name:
 
+        match transaction_type:
+
+            case TransactionType.CURRENCY_TRANSACTION.name:
+                if not self.currency_transaction_is_valid(transaction):
+                    return False
+
+            case TransactionType.CREATE_SHIPMENT_TRANSACTION.name:
+                if not self.create_shipment_transaction_is_valid(transaction):
+                    return False
+                
+            case TransactionType.CURRENCY_BLOCKING_TRANSACTION.name:
+                if not self.currency_blocking_transaction_is_valid(transaction):
+                    return False
+                
+            case TransactionType.NEW_ACCOUNT_TRANSACTION.name:
+                pass
+
+            case _:
+                print('Unknown transaction type')
+                return False
+
+        #  adding transaction to pool
         self.transaction_pool[transaction_id] = transaction.copy()
 
         return True
+
+    # def add_create_shipment_txn_to_pool(self, transaction):
+
+    #     # https://stackoverflow.com/questions/24804453/how-can-i-copy-a-python-string
+    #     transaction_id = (transaction['body']['id']+'.')[:-1]
+
+    #     transaction_type = transaction['body']['type']
+
+    #     if transaction_type == TransactionType.CURRENCY_TRANSACTION.name:
+    #         if not self.currency_transaction_is_valid(transaction):
+    #             return False
+    #     # elif transaction_type == TransactionType.NEW_ACCOUNT_TRANSACTION.name:
+
+    #     self.transaction_pool[transaction_id] = transaction.copy()
+
+    #     return True
 
     def return_transaction_pool(self):
 

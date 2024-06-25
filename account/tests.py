@@ -27,8 +27,11 @@ class AccountTests(TestCase):
         #  NOTE:  here we are using one local blockchain with two accounts -
         #  this is to avoid the need for blockchain synchronization
 
-        new_account_transaction = self.account.generate_transaction(to=None)
-        new_account2_transaction = self.account2.generate_transaction(to=None)
+        # new_account_transaction = self.account.generate_transaction(to=None)
+        # new_account2_transaction = self.account2.generate_transaction(to=None)
+        
+        new_account_transaction = self.account.generate_account_transaction()
+        new_account2_transaction = self.account2.generate_account_transaction()
 
         self.account.add_transaction_to_pool(new_account_transaction)
         self.account.add_transaction_to_pool(new_account2_transaction)
@@ -57,7 +60,11 @@ class AccountTests(TestCase):
 
     def test_generate_currency_transacion(self):
 
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to='some_address',
+        #     amount=1000, data='test_data')
+        
+        t = self.account.generate_currency_transaction(
             to='some_address',
             amount=1000, data='test_data')
 
@@ -65,15 +72,21 @@ class AccountTests(TestCase):
 
     def test_generate_account_transacion(self):
 
-        t = self.account.generate_transaction(
-            to='some_address',
-            amount=1000)
+        # t = self.account.generate_transaction(
+        #     to='some_address',
+        #     amount=1000)
+        
+        t = self.account.generate_account_transaction()
 
         pprint(t)
 
     def test_verify_valid_currency_transacion(self):
 
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to=self.account2.address,
+        #     amount=1000)
+        
+        t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=1000)
 
@@ -83,7 +96,11 @@ class AccountTests(TestCase):
 
     def test_verify_invalid_currency_transacion(self):
 
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to='some_address',
+        #     amount=1000)
+        
+        t = self.account.generate_currency_transaction(
             to='some_address',
             amount=1000)
 
@@ -97,9 +114,14 @@ class AccountTests(TestCase):
 
     def test_add_currency_transaction_to_pool(self):
 
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to=self.account2.address,
+        #     amount=1000)
+        
+        t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=1000)
+
 
         self.account.add_transaction_to_pool(t)
 
@@ -111,7 +133,11 @@ class AccountTests(TestCase):
 
     def test_add_account_transaction_to_pool(self):
 
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to=self.account2.address,
+        #     amount=1000)
+        
+        t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=1000)
 
@@ -125,7 +151,11 @@ class AccountTests(TestCase):
 
     def test_balance_is_correctly_updated_as_result_of_transaction(self):
        
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to=self.account2.address,
+        #     amount=100)
+        
+        t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=100)
 
@@ -148,7 +178,11 @@ class AccountTests(TestCase):
     def test_sending_transaction_to_invalid_account(self):
         
            
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to='invalid_address',
+        #     amount=100)
+        
+        t = self.account.generate_currency_transaction(
             to='invalid_address',
             amount=100)
 
@@ -160,7 +194,11 @@ class AccountTests(TestCase):
     def test_sending_transaction_to_invalid_account(self):
         
            
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to='invalid_address',
+        #     amount=100)
+        
+        t = self.account.generate_currency_transaction(
             to='invalid_address',
             amount=100)
 
@@ -171,7 +209,11 @@ class AccountTests(TestCase):
     
     def test_sending_invalid_amount(self):
        
-        t = self.account.generate_transaction(
+        # t = self.account.generate_transaction(
+        #     to=self.account2.address,
+        #     amount=10000000)
+        
+        t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=10000000)
 
