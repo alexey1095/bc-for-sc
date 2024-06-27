@@ -219,7 +219,7 @@ class Account:
             'type': TransactionType.CREATE_SHIPMENT_TRANSACTION.name,
             'vendor': vendor,
             'buyer': buyer,
-            'status': ShipmentStatus.CREATED.name,
+            # 'status': ShipmentStatus.SHIPMENT_CREATED.name,
             'previous_shipment': 'origin',
             'data': {
                 'product_description': product_description,
@@ -232,6 +232,33 @@ class Account:
 
                 'contract_number': contract_number
             }
+        }
+
+        signature = self.generate_signature(body)
+
+        return {
+            'body': body,
+            'signature': signature
+        }
+
+    def generate_confirm_shipment_or_delivery_transaction(self, shipment_id, transaction_type):
+        ''' Generate a transaction to confirm an existing shipment'''
+        
+        if transaction_type == TransactionType.CONFIRM_SHIPMENT_TRANSACTION:
+            transaction_type = TransactionType.CONFIRM_SHIPMENT_TRANSACTION.name
+        elif transaction_type ==  TransactionType.CONFIRM_DELIVERY_TRANSACTION:
+            transaction_type = TransactionType.CONFIRM_DELIVERY_TRANSACTION.name
+        else:
+            transaction_type = 'wrong_transaction_type'
+        
+        
+
+        body = {
+            'id': str(uuid4()),
+            'from': self.address,
+            'shipment_id': shipment_id,  # id of the shipment to be confirmed
+            'type': transaction_type, #TransactionType.CONFIRM_SHIPMENT_TRANSACTION.name,
+            # 'status': ShipmentStatus.SHIPMENT_CONFIRMED.name
         }
 
         signature = self.generate_signature(body)
@@ -284,33 +311,32 @@ class Account:
             return False
 
         return True
-    
+
     def currency_blocking_transaction_is_valid(self, transaction):
-        
-        buyer = transaction['body']['buyer']        
+
+        buyer = transaction['body']['buyer']
         amount = transaction['body']['amount']
 
         # check if vendor exits in `state` (we do not need to check the buyer because this point is called by buyer)
-        buyer_balance = self.state._retrieve_account_balance(buyer)        
+        buyer_balance = self.state._retrieve_account_balance(buyer)
 
         if buyer_balance < amount:
             return {
                 'ERROR': f'Buyer does not have enough money to create to block  - balance: {
                     buyer_balance} - address: {buyer}'}
-            
+
         if not self.signature_is_valid(
             public_key_hex=buyer,
             data=transaction['body'],
             signature=transaction['signature']
-            ):
+        ):
             print({
                 'Error': 'Transaction validation failed - signature is not valid',
                 'Details': transaction
             })
             return False
-        
+
         return True
-        
 
     def create_shipment_transaction_is_valid(self, transaction):
 
@@ -331,19 +357,84 @@ class Account:
             return {
                 'ERROR': f'Buyer does not have enough money to create a new shipemnt - balance: {
                     buyer_balance} - address: {price}'}
-            
+
         if not self.signature_is_valid(
             public_key_hex=buyer,
             data=transaction['body'],
             signature=transaction['signature']
-            ):
+        ):
             print({
                 'Error': 'Transaction validation failed - signature is not valid',
                 'Details': transaction
             })
             return False
+
+        return True
+
+    def confirm_shipment_transaction_is_valid(self, transaction):
+        ''' Check if the sent transaction is valid'''
+
+        shipment_id = transaction['body']['shipment_id']
+        transaction_sender = transaction['body']['from']
+        # transaction_status = transaction['body']['status']
+
+        #  retrive the value for a given shipemnt from trie
+        shipment = self.state.retrieve_state_value(shipment_id)
+
+        if not shipment:
+            print('\nERROR: Transaction does not exist in state')
+            pprint(transaction)
+            return False
+        
+        vendor = shipment['vendor']
+        
+        if vendor != transaction_sender:
+            print({'\nERROR':'Only vendor can confirm the shipment request'})
+            pprint(transaction)
+            print(f'Transaction sender : {transaction_sender} is not vendor {vendor}')
+            return False
+        
+        
+        # if transaction_status != ShipmentStatus.SHIPMENT_CONFIRMED.name:
+        #     print({'\nERROR':'Wrong transaction status '})
+        #     pprint(transaction)
+        #     print(f'Transaction status : {transaction_status} is not  {ShipmentStatus.SHIPMENT_CONFIRMED.name}')
+        #     return False
+            
+        
         
         return True
+            
+        
+    def confirm_delivery_transaction_is_valid(self, transaction):
+        
+        shipment_id = transaction['body']['shipment_id']
+        transaction_sender = transaction['body']['from']
+        # transaction_status = transaction['body']['status']
+
+        #  retrive the value for a given shipemnt from trie
+        shipment = self.state.retrieve_state_value(shipment_id)
+
+        if not shipment:
+            print('\nERROR: Transaction does not exist in state')
+            pprint(transaction)
+            return False
+        
+        buyer = shipment['buyer']
+        
+        if buyer != transaction_sender:
+            print({'\nERROR':'Only buyer can confirm the shipment request'})
+            pprint(transaction)
+            print(f'Transaction sender : {transaction_sender} is not buyer {buyer}')
+            return False
+        
+        
+        
+        return True
+        
+        
+        
+        
 
     def add_transaction_to_pool(self, transaction):
 
@@ -366,11 +457,19 @@ class Account:
             case TransactionType.CREATE_SHIPMENT_TRANSACTION.name:
                 if not self.create_shipment_transaction_is_valid(transaction):
                     return False
+
+            case TransactionType.CONFIRM_SHIPMENT_TRANSACTION.name:
+                if not self.confirm_shipment_transaction_is_valid(transaction):
+                    return False
                 
+            case TransactionType.CONFIRM_DELIVERY_TRANSACTION.name:
+                if not self.confirm_delivery_transaction_is_valid(transaction):
+                    return False
+
             case TransactionType.CURRENCY_BLOCKING_TRANSACTION.name:
                 if not self.currency_blocking_transaction_is_valid(transaction):
                     return False
-                
+
             case TransactionType.NEW_ACCOUNT_TRANSACTION.name:
                 pass
 

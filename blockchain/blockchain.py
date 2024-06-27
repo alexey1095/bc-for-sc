@@ -133,7 +133,7 @@ class Blockchain:
     def update_blockchain(self, blockchain):
         # update  local version of the blockchain with the 
         # latest version, this is typicall done as a part 
-        # of the synchronization process
+        # of the synchronization process `rename to synchronize_blockchain`
         
         #  check if we need to update the blockchain
         hash_existing_blockchain = generate_keccak256_hash(self.blockchain)

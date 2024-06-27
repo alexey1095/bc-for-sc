@@ -1,5 +1,7 @@
+import copy
 from .trie import Trie
 from account.transaction_types import TransactionType
+from shipment.shipment_status import ShipmentStatus
 
 
 class State():
@@ -16,7 +18,12 @@ class State():
         self.state_trie.store(key=address, value=balance)
 
     def _retrieve_account_balance(self, address):
-        return self.state_trie.retrieve(key=address)
+        # needs to be replaced with `retrieve_trie_value`
+        return self.state_trie.retrieve(key=address)    
+    
+    def retrieve_state_value(self, key):
+        ''' Returns value for a sent `key` or `None` if key does not exist '''
+        return self.state_trie.retrieve(key=key)
 
     def get_root_hash(self):
         return self.state_trie.root_hash
@@ -68,16 +75,32 @@ class State():
 
     def _update_state_new_shipment(self, transaction):
         ''' Update state by adding a new shipment '''
+        
+        
+    
+        
+        
+        # https://stackoverflow.com/questions/24804453/how-can-i-copy-a-python-string
+        transaction_id = (transaction['body']['id']+'.')[:-1]        
+        body_copy= copy.deepcopy(transaction['body'])
+        
+        # NOTE: the `value` for the shipment looks similare to the `cretae shipment transaction`
+        #  with minor changes , the type is `SHIPMENT` and with added field `status`
+        
+        body_copy['type']='SHIPMENT'
+        body_copy['status'] = ShipmentStatus.SHIPMENT_CREATED.name
+        
 
         self.state_trie.store(
-            key=transaction['body']['id'],
-            value=transaction['body']
+            key= transaction_id,
+            value=body_copy
         )
         
-        
+        # transaction =None
+
     def _update_state_currency_blocking(self, transaction):
         ''' Update state by adding currency blocking transaction '''
-        
+
         buyer_address = transaction['body']['buyer']
 
         buyer_balance = self._retrieve_account_balance(
@@ -87,7 +110,34 @@ class State():
 
         buyer_balance -= amount_to_block
         
+    def _update_state_confirm_shipment(self, transaction):
         
+        shipment_id = transaction['body']['shipment_id']
+        
+        shipment_body = self.retrieve_state_value(shipment_id)
+        
+        shipment_body['status'] = ShipmentStatus.SHIPMENT_CONFIRMED.name
+        
+        self.state_trie.store(
+            key=shipment_id,
+            value=shipment_body
+        )
+        
+        
+    def _update_state_confirm_delivery(self, transaction):
+        
+        shipment_id = transaction['body']['shipment_id']
+        
+        shipment_body = self.retrieve_state_value(shipment_id)
+        
+        shipment_body['status'] = ShipmentStatus.SHIPMENT_DELIVERED.name
+        
+        self.state_trie.store(
+            key=shipment_id,
+            value=shipment_body
+        )
+        
+    
         
 
     def _process_transaction(self, transaction):
@@ -114,6 +164,15 @@ class State():
                 self._update_state_new_shipment(transaction)
                 return
             
+            case TransactionType.CONFIRM_SHIPMENT_TRANSACTION.name:
+                self._update_state_confirm_shipment(transaction)
+                return
+            
+            case TransactionType.CONFIRM_DELIVERY_TRANSACTION.name:
+                self._update_state_confirm_delivery(transaction)
+                return
+
+
             case TransactionType.CURRENCY_BLOCKING_TRANSACTION.name:
                 self._update_state_currency_blocking(transaction)
                 return

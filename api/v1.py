@@ -6,6 +6,7 @@ from account.account import Account
 from account.account import TransactionType
 from state.state import State
 from blockchain.lib import mine_block
+from shipment.shipment_status import *
 import json
 import time
 from pprint import pprint
@@ -131,7 +132,7 @@ def create_new_transaction(request, transaction: Transaction):
 
 
 class CreateShipment(Schema):
-    vendor: str    
+    vendor: str
     product_description: str
     qty: int
     price: int
@@ -142,7 +143,6 @@ class CreateShipment(Schema):
 @router.post('/create_shipment', description="Creates a transaction")
 def create_shipment_api_end_point(request, shipment: CreateShipment):
 
-   
     #  create new shipment transaction
     txn_shipment = account.generate_new_shipment_transaction(
         vendor=shipment.vendor,
@@ -151,51 +151,94 @@ def create_shipment_api_end_point(request, shipment: CreateShipment):
         qty=shipment.qty,
         price=shipment.price,
         contract_number=shipment.contract_number
-        )
-    
+    )
+
     if not account.add_transaction_to_pool(txn_shipment):
         return {
             'Error': 'Transaction is not valid',
             'Details': txn_shipment}
     blockchain.redis.publish_transaction(str(txn_shipment))
-    
-    # generate currency blocking txn            
-    txn_blocking= account.generate_currency_blocking_transaction(
+
+    # generate currency blocking txn
+    txn_blocking = account.generate_currency_blocking_transaction(
         amount=shipment.price,
-        ref_txn_id = txn_shipment['body']['id'])
-    
+        ref_txn_id=txn_shipment['body']['id'])
+
     #  adding blocking transaction to transaction pool and publish
-    
+
     if not account.add_transaction_to_pool(txn_blocking):
         return {
             'Error': 'Transaction is not valid',
             'Details': txn_blocking}
-      
+
     blockchain.redis.publish_transaction(str(txn_blocking))
 
     return ([txn_shipment, txn_blocking])
 
 
-    # tt = account.generate_currency_transaction(
-    #     to=transaction.to,
-    #     amount=transaction.amount
-    # )
+class ShipmentId(Schema):
+    shipment_id: str
 
-    # pprint(tt)
 
-    # if not account.add_transaction_to_pool(tt):
-    #     return {
-    #         'Error': 'Transaction is not valid',
-    #         'Details': tt}
+@router.post('/confirm_shipment', description="Confirm shipment transaction")
+def confirm_shipment_api_end_point(request, shipment: ShipmentId):
 
-    # # tt_encoded = json.dumps(tt)
-    # tt_encoded = str(tt)
+    #  create new shipment transaction
+    txn_shipment = account.generate_confirm_shipment_or_delivery_transaction(
+        shipment_id=shipment.shipment_id, transaction_type=TransactionType.CONFIRM_SHIPMENT_TRANSACTION
+    )
 
-    # blockchain.redis.publish_transaction(tt_encoded)
+    if not account.add_transaction_to_pool(txn_shipment):
+        return {
+            'Error': 'Transaction is not valid',
+            'Details': txn_shipment}
+    blockchain.redis.publish_transaction(str(txn_shipment))
 
-    # # ss = json.dumps(tt)
+    return ([txn_shipment])
 
-    # return (tt)
+
+
+@router.post('/confirm_delivery', description="Confirm delivery ")
+def confirm_delivery_api_end_point(request, shipment: ShipmentId):
+
+    #  create new shipment transaction
+    txn_shipment = account.generate_confirm_shipment_or_delivery_transaction(
+        shipment_id=shipment.shipment_id, transaction_type = TransactionType.CONFIRM_DELIVERY_TRANSACTION
+    )
+
+    if not account.add_transaction_to_pool(txn_shipment):
+        return {
+            'Error': 'Transaction is not valid',
+            'Details': txn_shipment}
+    blockchain.redis.publish_transaction(str(txn_shipment))
+
+    return ([txn_shipment])
+
+
+
+
+@router.get('/state')
+def show_state(request):
+    return state.state_trie.root
+
+#  -------------------------------------------------------------------
+
+
+class StateKey(Schema):
+    key: str
+
+
+@router.post('/state', description=" retrieve state for a sent key")
+def show_state_value_api_end_point(request, received_key: StateKey):
+
+    value = state.retrieve_state_value(key=received_key.key)
+
+    if not value:
+        return {'ERROR': f'The key {received_key.key} does not exist in state'}
+
+    return value
+
+#  ------------------------------------------------------------------
 
 
 @router.get('/transaction', description="Show transaction pool")
@@ -259,11 +302,6 @@ def synchronize_blockchain_request(request):
 
     # except ValueError as e:
     #     return e
-
-
-@router.get('/state')
-def show_state(request):
-    return state.state_trie.root
 
 
 @router.get('/account')
