@@ -137,6 +137,7 @@ class CreateShipment(Schema):
     qty: int
     price: int
     contract_number: str
+    previous_shipment: str
     # action: str  # create_shipment, confirm_shipment, confirm_delivery
 
 
@@ -150,7 +151,8 @@ def create_shipment_api_end_point(request, shipment: CreateShipment):
         product_description=shipment.product_description,
         qty=shipment.qty,
         price=shipment.price,
-        contract_number=shipment.contract_number
+        contract_number=shipment.contract_number,
+        previous_shipment=shipment.previous_shipment
     )
 
     if not account.add_transaction_to_pool(txn_shipment):
@@ -194,7 +196,7 @@ def confirm_shipment_api_end_point(request, shipment: ShipmentId):
             'Details': txn_shipment}
     blockchain.redis.publish_transaction(str(txn_shipment))
 
-    return ([txn_shipment])
+    return (txn_shipment)
 
 
 
@@ -239,6 +241,44 @@ def show_state_value_api_end_point(request, received_key: StateKey):
     return value
 
 #  ------------------------------------------------------------------
+
+
+@router.post('/provenance', description=" get provenance for a sent shipemnt id")
+def show_provenance_api_end_point(request, shipment: ShipmentId):
+
+    # value = state.retrieve_state_value(key=shipment.shipment_id)
+
+    # if not value:
+    #     return {'ERROR': f'The key {shipment.shipment_id} does not exist in state'}
+
+    # return value
+    
+    # value = None
+    
+    shipments = []
+    
+    shipment_id = shipment.shipment_id
+
+
+    while True:
+        
+        shipment = state.retrieve_state_value(key=shipment_id)
+
+        if not shipment:
+            return {'ERROR': f'The key {shipment_id} does not exist in state'}
+        
+        shipments.append(shipment)
+        
+        shipment_id = shipment['previous_shipment'] 
+        
+        if shipment_id == 'origin':
+            break        
+            
+    return shipments
+        
+
+
+
 
 
 @router.get('/transaction', description="Show transaction pool")

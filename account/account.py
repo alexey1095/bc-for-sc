@@ -211,8 +211,12 @@ class Account:
                                           product_description,
                                           qty,
                                           price,
-                                          contract_number):
+                                          contract_number, previous_shipment):
         ''' Generate a transaction to create a new shipment'''
+        
+        if previous_shipment == "":
+            previous_shipment = 'origin'
+        
 
         body = {
             'id': str(uuid4()),
@@ -220,7 +224,7 @@ class Account:
             'vendor': vendor,
             'buyer': buyer,
             # 'status': ShipmentStatus.SHIPMENT_CREATED.name,
-            'previous_shipment': 'origin',
+            'previous_shipment': previous_shipment,
             'data': {
                 'product_description': product_description,
                 'qty': qty,
