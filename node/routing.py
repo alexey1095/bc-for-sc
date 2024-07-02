@@ -6,10 +6,10 @@ from . import ws_consumer
 
 # websocket_urlpatterns = [
 #     re_path(r"ws/node/", ws_consumer.NodeWebSocketConsumer.as_asgi()),
-#     # re_path(r"ws/node/(?P<room_name>\w+)/$", consumers.ChatConsumer.as_asgi()),
+#     # re_path(r"ws/node/(?P<room_name>\w+)/$", consumers.NodeConsumer.as_asgi()),
     
 # ]
 
 websocket_urlpatterns = [
-    re_path(r"ws/node/(?P<room_name>\w+)/$", ws_consumer.ChatConsumer.as_asgi()),
+    re_path(r"ws/node/(?P<node_id>\w+)/$", ws_consumer.NodeConsumer.as_asgi()),
 ]

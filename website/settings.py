@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'transactions',
     'state',
     'shipment',
+    "django_bootstrap5",
     # "debug_toolbar",    
 ]
 

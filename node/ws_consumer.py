@@ -26,19 +26,19 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class NodeConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = "chat_%s" % self.room_name
+        self.node_id = self.scope["url_route"]["kwargs"]["node_id"]
+        self.node_group_name = "node_%s" % self.node_id
 
         # Join room group
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_add(self.node_group_name, self.channel_name)
 
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_discard(self.node_group_name, self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -47,11 +47,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Send message to room group
         await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", "message": message}
+            self.node_group_name, {"type": "node_message", "message": message}
         )
 
     # Receive message from room group
-    async def chat_message(self, event):
+    async def node_message(self, event):
         message = event["message"]
 
         # Send message to WebSocket

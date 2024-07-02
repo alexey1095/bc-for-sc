@@ -437,6 +437,18 @@ class Account:
         return True
         
         
+    def new_account_transaction_is_valid(self, transaction):
+        
+        
+        new_account_address = transaction['body']['address']
+        
+        #  retrive the value for a given address
+        new_account = self.state.retrieve_state_value(new_account_address)
+
+        if new_account:
+            print({'\nERROR':'This account address already exists in the system'})
+            pprint(transaction)
+            return False
         
         
 
@@ -475,7 +487,8 @@ class Account:
                     return False
 
             case TransactionType.NEW_ACCOUNT_TRANSACTION.name:
-                pass
+                if not self.new_account_transaction_is_valid(transaction):
+                    return False
 
             case _:
                 print('Unknown transaction type')

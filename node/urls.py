@@ -8,6 +8,6 @@ urlpatterns = [
     # path("", views.index, name="node"),
     # path("sc_client/", sc_client_view.index, name="index_sc_client"),
     # path("", views.index, name="roomdd"),
-    path("<str:room_name>/", views.room, name="room"),
-    
+    path("<str:node_id>/", views.node, name="node_page"),
+    path("create_shipment/", views.create_shipment, name='create_shipment')    
 ]

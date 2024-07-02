@@ -352,13 +352,14 @@ def show_account(request):
 
 @router.get('/send_message')
 def send_message(request):
+    ''' Send message to node '''
     
 
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
-        f'chat_{blockchain.node_id}',
+        f'node_{blockchain.node_id}',
         {
-            'type': 'chat_message',
+            'type': 'node_message',
             'message': "Hi from the backend"
         }
     )
