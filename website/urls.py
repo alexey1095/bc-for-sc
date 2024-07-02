@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     path('api/', api.urls),
-    path("debug/", include("debug_toolbar.urls")),
+    # path("debug/", include("debug_toolbar.urls")),
+    path("node/", include("node.urls")),
 ]
 

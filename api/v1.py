@@ -10,6 +10,12 @@ from shipment.shipment_status import *
 import json
 import time
 from pprint import pprint
+# from node.ws_consumer
+
+import asyncio
+from websockets.sync.client import connect
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 # import sys
@@ -199,13 +205,12 @@ def confirm_shipment_api_end_point(request, shipment: ShipmentId):
     return (txn_shipment)
 
 
-
 @router.post('/confirm_delivery', description="Confirm delivery ")
 def confirm_delivery_api_end_point(request, shipment: ShipmentId):
 
     #  create new shipment transaction
     txn_shipment = account.generate_confirm_shipment_or_delivery_transaction(
-        shipment_id=shipment.shipment_id, transaction_type = TransactionType.CONFIRM_DELIVERY_TRANSACTION
+        shipment_id=shipment.shipment_id, transaction_type=TransactionType.CONFIRM_DELIVERY_TRANSACTION
     )
 
     if not account.add_transaction_to_pool(txn_shipment):
@@ -215,8 +220,6 @@ def confirm_delivery_api_end_point(request, shipment: ShipmentId):
     blockchain.redis.publish_transaction(str(txn_shipment))
 
     return ([txn_shipment])
-
-
 
 
 @router.get('/state')
@@ -252,33 +255,28 @@ def show_provenance_api_end_point(request, shipment: ShipmentId):
     #     return {'ERROR': f'The key {shipment.shipment_id} does not exist in state'}
 
     # return value
-    
+
     # value = None
-    
+
     shipments = []
-    
+
     shipment_id = shipment.shipment_id
 
-
     while True:
-        
+
         shipment = state.retrieve_state_value(key=shipment_id)
 
         if not shipment:
             return {'ERROR': f'The key {shipment_id} does not exist in state'}
-        
+
         shipments.append(shipment)
-        
-        shipment_id = shipment['previous_shipment'] 
-        
+
+        shipment_id = shipment['previous_shipment']
+
         if shipment_id == 'origin':
-            break        
-            
+            break
+
     return shipments
-        
-
-
-
 
 
 @router.get('/transaction', description="Show transaction pool")
@@ -349,4 +347,23 @@ def show_account(request):
     return {
         'address': account.address,
         'balance': state._retrieve_account_balance(account.address)
+    }
+
+
+@router.get('/send_message')
+def send_message(request):
+    
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f'chat_{blockchain.node_id}',
+        {
+            'type': 'chat_message',
+            'message': "Hi from the backend"
+        }
+    )
+
+    return {
+        'status': 'message hopefully sent'
+
     }

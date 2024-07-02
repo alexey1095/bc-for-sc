@@ -35,7 +35,7 @@ class Blockchain:
         # self.peer_url = peer_url
 
         #  unique randomly generated node's id
-        self.node_id = str(uuid4())
+        self.node_id = uuid4().hex
         
         self.account = account
 
