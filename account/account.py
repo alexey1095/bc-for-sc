@@ -450,6 +450,8 @@ class Account:
             pprint(transaction)
             return False
         
+        return True
+        
         
 
     def add_transaction_to_pool(self, transaction):
@@ -537,6 +539,9 @@ class Account:
                 # del self.transaction_pool[t]
                 self.transaction_pool.pop(t)
                 print(t)
+                
+                
+    
 
 
 # if __name__ == "__main__":

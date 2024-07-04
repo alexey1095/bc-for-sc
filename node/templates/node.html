@@ -12,102 +12,187 @@
 
 <body onload="initNode()">
 
-    <div class="container" text-center">
+    <div class="container">
 
         <!-- <div class="row mb-5">
         </div> -->
 
-        <div class="row mx-5 my-5 ">
-            <div class="col">
-            </div>
-            <div class="col">
-                <!-- <p class="h3 my-3">Create shipment</p> -->
-                <h1 class="display-6 my-3">Create shipment</h1>
-                <form class="card p-3 bg-light shadow" action="{% url 'create_shipment' %}" method="post">
-                    {% csrf_token %}
-                                 
-                        {% bootstrap_form create_shipment_form %}
-
-                        <hr class="border-1  " />
-                    
-                        {% bootstrap_button button_type="submit" content="OK" %}
-                </form>
-            </div>
-            <div class="col">
-            </div>
-        </div>
-
-        <!-- <div class="row mb-5">
-        </div> -->
 
         <div class="row  row mx-5 my-5">
-            <textarea id="node-log" cols="100" rows="20"></textarea><br>
-            <input id="node-message-input" type="text" size="100"><br>
-            <input id="node-message-submit" type="button" value="Send">
-            {{ node_id|json_script:"node-id" }}
+
+            <div class="card p-3 bg-light shadow">
+                <p class="font-monospace">Node: {{ node_id }}</p>
+                <p class="font-monospace">Address: {{ self_address }}</p>
+
+            </div>
         </div>
 
-    </div>
 
 
-    <script>
-        const nodeId = JSON.parse(document.getElementById('node-id').textContent);
 
-        const nodeSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/node/'
-            + nodeId
-            + '/'
-        );
 
-        nodeSocket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#node-log').value += (data.message + '\n');
-        };
 
-        nodeSocket.onclose = function (e) {
-            console.error('Node socket closed unexpectedly');
-        };
+        <div class="row mx-5 my-5 ">
 
-        document.querySelector('#node-message-input').focus();
-        document.querySelector('#node-message-input').onkeyup = function (e) {
-            if (e.key === 'Enter') {  // enter, return
-                document.querySelector('#node-message-submit').click();
+            <div class="col">
+                <!-- <p class="h3 my-3">Create shipment</p> -->
+                <h1 class="display-6 my-3">Create Shipment</h1>
+                <form class="card p-3 bg-light shadow" action="{% url 'create_shipment' %}" method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form create_shipment_form %}
+                    <hr class="border-1  my-4" />
+                    {% bootstrap_button button_type="submit" content="Submit" %}
+                </form>
+            </div>
+
+
+
+            <!-- Confirm Shipment Form  -->
+            <div class="col">
+                <h1 class="display-6 my-3">Confirm Shipment</h1>
+                <form class="card p-3 bg-light shadow" action="{% url 'confirm_shipment' %}" method="post">
+                    {% csrf_token %}
+
+                    {% bootstrap_form confirm_shipment_form %}
+
+                    <hr class="border-1  " />
+
+                    {% bootstrap_button button_type="submit" content="Submit" %}
+                </form>
+
+                <!-- Confirm Delivery Form  -->
+                <div class="col">
+                    <h1 class="display-6 my-3">Confirm Delivery</h1>
+                    <form class="card p-3 bg-light shadow" action="{% url 'confirm_delivery' %}" method="post">
+                        {% csrf_token %}
+
+                        {% bootstrap_form confirm_delivery_form %}
+
+                        <hr class="border-1  " />
+
+                        {% bootstrap_button button_type="submit" content="Submit" %}
+                    </form>
+                </div>
+
+                <!-- Mine Form  -->
+                <div class="col">
+                    <h1 class="display-6 my-3">Mine</h1>
+
+                    <form class="card p-3 bg-light shadow" action="/api/v1/mine" method="get">
+
+
+
+                        <hr class="border-1  " />
+
+                        <button type="submit" class="btn btn-success">Mine</button>
+
+
+                    </form>
+
+
+
+
+
+                </div>
+
+
+            </div>
+
+            <!-- <div class="row mb-5">
+        </div> -->
+
+        </div>
+
+        <div class="row  row mx-5 my-5">
+
+            <div class="card p-3 bg-light shadow">
+
+                <textarea id="node-log" cols="100" rows="20"></textarea><br>
+                <input id="node-message-input" type="text" size="100"><br>
+                <input id="node-message-submit" type="button" value="Send">
+
+
+
+                <hr class="border-1  " />
+
+
+
+
+            </div>
+
+
+            {{ node_id|json_script:"node-id" }}
+
+        </div>
+
+
+
+
+        <script>
+            const nodeId = JSON.parse(document.getElementById('node-id').textContent);
+
+            const nodeSocket = new WebSocket(
+                'ws://'
+                + window.location.host
+                + '/ws/node/'
+                + nodeId
+                + '/'
+            );
+
+            nodeSocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                document.querySelector('#node-log').value += "\n ***** NEW MESSAGE RECEIVED *****"
+
+
+
+                document.querySelector('#node-log').value += JSON.stringify(data.message, null, 4);;
+
+
+
+            };
+
+            nodeSocket.onclose = function (e) {
+                console.error('Node socket closed unexpectedly');
+            };
+
+            document.querySelector('#node-message-input').focus();
+            document.querySelector('#node-message-input').onkeyup = function (e) {
+                if (e.key === 'Enter') {  // enter, return
+                    document.querySelector('#node-message-submit').click();
+                }
+            };
+
+            document.querySelector('#node-message-submit').onclick = function (e) {
+                const messageInputDom = document.querySelector('#node-message-input');
+                const message = messageInputDom.value;
+                nodeSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                messageInputDom.value = '';
+            }; 
+        </script>
+
+        <script>
+            function initNode() {
+
+                nodeURL = 'http://' + window.location.host + '/api/v1/start';
+                console.log('Init node url ' + nodeURL);
+
+                fetch(nodeURL)
+                    .then(response => {
+                        console.log(response.json());
+                    })
+                    .then(data => {
+                        console.log(data);
+                    })
+                    .catch(e => {
+                        console.error('Error init node: ' + e)
+
+                    });
+
+
             }
-        };
-
-        document.querySelector('#node-message-submit').onclick = function (e) {
-            const messageInputDom = document.querySelector('#node-message-input');
-            const message = messageInputDom.value;
-            nodeSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        }; 
-    </script>
-
-    <script>
-        function initNode() {
-
-            nodeURL = 'http://' + window.location.host + '/api/v1/start';
-            console.log('Init node url ' + nodeURL);
-
-            fetch(nodeURL)
-                .then(response => {
-                    console.log(response.json());
-                })
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(e => {
-                    console.error('Error init node: ' + e)
-
-                });
-
-
-        }
-    </script>
+        </script>
 </body>
 
 </html>

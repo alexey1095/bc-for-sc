@@ -149,9 +149,9 @@ class CreateShipment(Schema):
 
 @router.post('/create_shipment', description="Creates a transaction")
 def create_shipment_api_end_point(request, shipment: CreateShipment):
-
-    #  create new shipment transaction
-    txn_shipment = account.generate_new_shipment_transaction(
+    
+    
+    res = blockchain.create_shipment(
         vendor=shipment.vendor,
         buyer=account.address,
         product_description=shipment.product_description,
@@ -160,28 +160,42 @@ def create_shipment_api_end_point(request, shipment: CreateShipment):
         contract_number=shipment.contract_number,
         previous_shipment=shipment.previous_shipment
     )
+    
+    return (res)
 
-    if not account.add_transaction_to_pool(txn_shipment):
-        return {
-            'Error': 'Transaction is not valid',
-            'Details': txn_shipment}
-    blockchain.redis.publish_transaction(str(txn_shipment))
+    # #  create new shipment transaction
+    # txn_shipment = account.generate_new_shipment_transaction(
+    #     vendor=shipment.vendor,
+    #     buyer=account.address,
+    #     product_description=shipment.product_description,
+    #     qty=shipment.qty,
+    #     price=shipment.price,
+    #     contract_number=shipment.contract_number,
+    #     previous_shipment=shipment.previous_shipment
+    # )
 
-    # generate currency blocking txn
-    txn_blocking = account.generate_currency_blocking_transaction(
-        amount=shipment.price,
-        ref_txn_id=txn_shipment['body']['id'])
+    # if not account.add_transaction_to_pool(txn_shipment):
+    #     return {
+    #         'Error': 'Transaction is not valid',
+    #         'Details': txn_shipment}
+        
+    # blockchain.redis.publish_transaction(str(txn_shipment))
 
-    #  adding blocking transaction to transaction pool and publish
+    # # generate currency blocking txn
+    # txn_blocking = account.generate_currency_blocking_transaction(
+    #     amount=shipment.price,
+    #     ref_txn_id=txn_shipment['body']['id'])
 
-    if not account.add_transaction_to_pool(txn_blocking):
-        return {
-            'Error': 'Transaction is not valid',
-            'Details': txn_blocking}
+    # #  adding blocking transaction to transaction pool and publish
 
-    blockchain.redis.publish_transaction(str(txn_blocking))
+    # if not account.add_transaction_to_pool(txn_blocking):
+    #     return {
+    #         'Error': 'Transaction is not valid',
+    #         'Details': txn_blocking}
 
-    return ([txn_shipment, txn_blocking])
+    # blockchain.redis.publish_transaction(str(txn_blocking))
+
+    # return ([txn_shipment, txn_blocking])
 
 
 class ShipmentId(Schema):
@@ -190,36 +204,45 @@ class ShipmentId(Schema):
 
 @router.post('/confirm_shipment', description="Confirm shipment transaction")
 def confirm_shipment_api_end_point(request, shipment: ShipmentId):
+    
+    
+    res= blockchain.confirm_shipment(shipment.shipment_id)
+    
+    return res
 
-    #  create new shipment transaction
-    txn_shipment = account.generate_confirm_shipment_or_delivery_transaction(
-        shipment_id=shipment.shipment_id, transaction_type=TransactionType.CONFIRM_SHIPMENT_TRANSACTION
-    )
+    # #  create new shipment transaction
+    # txn_shipment = account.generate_confirm_shipment_or_delivery_transaction(
+    #     shipment_id=shipment.shipment_id, transaction_type=TransactionType.CONFIRM_SHIPMENT_TRANSACTION
+    # )
 
-    if not account.add_transaction_to_pool(txn_shipment):
-        return {
-            'Error': 'Transaction is not valid',
-            'Details': txn_shipment}
-    blockchain.redis.publish_transaction(str(txn_shipment))
+    # if not account.add_transaction_to_pool(txn_shipment):
+    #     return {
+    #         'Error': 'Transaction is not valid',
+    #         'Details': txn_shipment}
+    # blockchain.redis.publish_transaction(str(txn_shipment))
 
-    return (txn_shipment)
+    # return (txn_shipment)
 
 
 @router.post('/confirm_delivery', description="Confirm delivery ")
 def confirm_delivery_api_end_point(request, shipment: ShipmentId):
+    
+    res= blockchain.confirm_delivery(shipment.shipment_id)
+    
+    return res
 
-    #  create new shipment transaction
-    txn_shipment = account.generate_confirm_shipment_or_delivery_transaction(
-        shipment_id=shipment.shipment_id, transaction_type=TransactionType.CONFIRM_DELIVERY_TRANSACTION
-    )
+    # #  create new shipment transaction
+    # txn_shipment = account.generate_confirm_shipment_or_delivery_transaction(
+    #     shipment_id=shipment.shipment_id, transaction_type=TransactionType.CONFIRM_DELIVERY_TRANSACTION
+    # )
 
-    if not account.add_transaction_to_pool(txn_shipment):
-        return {
-            'Error': 'Transaction is not valid',
-            'Details': txn_shipment}
-    blockchain.redis.publish_transaction(str(txn_shipment))
+    # if not account.add_transaction_to_pool(txn_shipment):
+    #     return {
+    #         'Error': 'Transaction is not valid',
+    #         'Details': txn_shipment}
+    # blockchain.redis.publish_transaction(str(txn_shipment))
 
-    return ([txn_shipment])
+    # return ([txn_shipment])
 
 
 @router.get('/state')

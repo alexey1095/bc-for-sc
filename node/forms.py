@@ -9,4 +9,11 @@ class CreateShipmentForm(forms.Form):
     contract_number = forms.CharField(label="Contract number", max_length=100, initial="contract_1")
     previous_shipment = forms.CharField(label="Previous shipment", max_length=100, initial="")
     
+
+class ConfirmShipmentForm(forms.Form):
+    shipment_id = forms.CharField(label="Shipment ID:", max_length=500)
+    
+    
+class ConfirmDeliveryForm(forms.Form):
+    shipment_id = forms.CharField(label="Shipment ID:", max_length=500)
     

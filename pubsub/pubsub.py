@@ -3,6 +3,8 @@ from typing import Type
 from redis import StrictRedis
 from pprint import pprint
 import ast
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 # from blockchain.blockchain import Blockchain
 # from account.account import Account
@@ -128,6 +130,21 @@ class RedisPubSub():
             print('Message content:')
             pprint(dict_msg_data)
             print('***** END OF MESSAGE *****')
+            
+            
+            # adding additional fields to dict to be visible in httml
+            
+            dict_msg_data['sending_node'] =node_name
+            dict_msg_data['channel'] =channel
+            
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+            f'node_{self.blockchain.node_id}',
+            {
+                'type': 'node_message',
+                'message': dict_msg_data
+            }
+        )
 
         except ValueError as e:
             #  this is for the case when the received message happens to be not in the standard format

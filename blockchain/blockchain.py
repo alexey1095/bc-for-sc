@@ -166,7 +166,72 @@ class Blockchain:
         
         print('\n++++++ LOCAL BLOCKCHAIN HAS BEEN UPDATED +++++++\n')
         return True
+    
+    
+    def create_shipment(self, vendor, buyer, product_description, qty, price, contract_number,previous_shipment):
+           #  create new shipment transaction (wrapper)
+        txn_shipment = self.account.generate_new_shipment_transaction(
+            vendor=vendor,
+            buyer=buyer,
+            product_description=product_description,
+            qty=qty,
+            price=price,
+            contract_number=contract_number,
+            previous_shipment=previous_shipment
+        )
+
+        if not self.account.add_transaction_to_pool(txn_shipment):
+            return {
+                'Error': 'Transaction is not valid',
+                'Details': txn_shipment}
+            
+        self.redis.publish_transaction(str(txn_shipment))
+
+        # generate currency blocking txn
+        txn_blocking = self.account.generate_currency_blocking_transaction(
+            amount=price,
+            ref_txn_id=txn_shipment['body']['id'])
+
+        #  adding blocking transaction to transaction pool and publish
+
+        if not self.account.add_transaction_to_pool(txn_blocking):
+            return {
+                'Error': 'Transaction is not valid',
+                'Details': txn_blocking}
+
+        self.redis.publish_transaction(str(txn_blocking))
+
+        return ([txn_shipment, txn_blocking])
             
         
+    def confirm_shipment(self, shipment_id):
+        
+        txn_shipment = self.account.generate_confirm_shipment_or_delivery_transaction(
+            shipment_id=shipment_id, transaction_type=TransactionType.CONFIRM_SHIPMENT_TRANSACTION
+            )
+
+        if not self.account.add_transaction_to_pool(txn_shipment):
+            return {
+                'Error': 'Transaction is not valid',
+                'Details': txn_shipment}
+        self.redis.publish_transaction(str(txn_shipment))
+
+        return (txn_shipment)
+    
+    
+    def confirm_delivery(self, shipment_id):
+        
+            #  create new shipment transaction
+        txn_shipment = self.account.generate_confirm_shipment_or_delivery_transaction(
+            shipment_id=shipment_id, transaction_type=TransactionType.CONFIRM_DELIVERY_TRANSACTION
+        )
+
+        if not self.account.add_transaction_to_pool(txn_shipment):
+            return {
+                'Error': 'Transaction is not valid',
+                'Details': txn_shipment}
+        self.redis.publish_transaction(str(txn_shipment))
+
+        return ([txn_shipment])
         
         
