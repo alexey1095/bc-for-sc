@@ -139,6 +139,7 @@ def create_new_transaction(request, transaction: Transaction):
 
 class CreateShipment(Schema):
     vendor: str
+    buyer: str # added
     product_description: str
     qty: int
     price: int
@@ -153,7 +154,8 @@ def create_shipment_api_end_point(request, shipment: CreateShipment):
     
     res = blockchain.create_shipment(
         vendor=shipment.vendor,
-        buyer=account.address,
+        # buyer=account.address,
+        buyer=shipment.buyer,
         product_description=shipment.product_description,
         qty=shipment.qty,
         price=shipment.price,

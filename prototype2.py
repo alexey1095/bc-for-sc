@@ -74,7 +74,8 @@ def create_shipment(txn, url_buyer):
     return shipment_id
 
 
-def run_shipment(address_vendor, address_buyer, url_buyer, url_vendor, contract_num, previous_shipment_id):
+# def run_shipment(address_vendor, address_buyer, url_buyer, url_vendor, contract_num, previous_shipment_id):
+def run_shipment( address_vendor, address_buyer,  url_vendor, url_buyer, contract_num, previous_shipment_id):
      #  ----------- create shipment (buyer) -------------------------------
 
     txn = {
