@@ -19,10 +19,12 @@ from shipment.shipment_status import ShipmentStatus
 
 
 class Account:
+    ''' Account class defines key attributes and methods '''
 
     def __init__(self, state: Type[State]):
 
-        self.private_key = ec.generate_private_key(ec.SECP256K1())
+        self.private_key = ec.generate_private_key(
+            ec.SECP256K1())
         self.public_key = self.private_key.public_key()
 
         #  alias for `public_key` is account address

@@ -63,12 +63,12 @@ def confirm_shipment(request):
     shipment_id = form.cleaned_data['shipment_id']
 
     res = blockchain.confirm_shipment(shipment_id)
-    
+
     return HttpResponse('<p>' + str(res)+'</p>')
 
 
 def confirm_delivery(request):
-    
+
     if request.method != 'POST':
         return HttpResponse('<h3>Only POST is allowed</h3>')
 
@@ -80,10 +80,8 @@ def confirm_delivery(request):
     shipment_id = form.cleaned_data['shipment_id']
 
     res = blockchain.confirm_delivery(shipment_id)
-    
-    return HttpResponse('<p>' + str(res)+'</p>')
 
-    
+    return HttpResponse('<p>' + str(res)+'</p>')
 
     # return render(request, "node.html", {"node_id": node_id})
 

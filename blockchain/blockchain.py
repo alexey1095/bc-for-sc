@@ -60,9 +60,6 @@ class Blockchain:
             response = requests.get(peer_url, timeout=1)
             response.raise_for_status()
 
-            # print('HTTP reponse :')
-            # pprint(response.json())
-
         except requests.ConnectionError as e:
             print(e)
             raise ValueError (f'Blockchain Synchronization Error {e}') from e
@@ -136,7 +133,9 @@ class Blockchain:
         # of the synchronization process `rename to synchronize_blockchain`
         
         #  check if we need to update the blockchain
-        hash_existing_blockchain = generate_keccak256_hash(self.blockchain)
+        hash_existing_blockchain = generate_keccak256_hash(
+            self.blockchain
+            )
         hash_sent_blockchain = generate_keccak256_hash(blockchain)
         
         if hash_existing_blockchain == hash_sent_blockchain:
