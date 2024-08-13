@@ -4,11 +4,6 @@ from api.v1 import blockchain
 from . forms import *
 from api.v1 import account
 
-# Create your views here.
-
-# def index(request):
-#     return render(request, "node.html")
-
 
 def node(request, node_id):
     return render(request, "node.html", {
@@ -83,27 +78,3 @@ def confirm_delivery(request):
 
     return HttpResponse('<p>' + str(res)+'</p>')
 
-    # return render(request, "node.html", {"node_id": node_id})
-
-
-# def index(request):
-#     # return HttpResponse('<H1>GO TO /api/v1/start </H1>')
-
-#     port = None
-
-#     gelenIleti = request.META.get('HTTP_X_FORWARDED_FOR')
-
-#     if gelenIleti:
-
-#         ip = gelenIleti.split(',')[0]
-
-#     else:
-
-#         ip = request.META.get('REMOTE_ADDR')
-
-#         port = request.META['SERVER_PORT']
-
-
-#     node_id = blockchain.node_id
-#     context = [node_id, ip, port]
-#     return render(request, "index.html", context )

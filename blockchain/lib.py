@@ -19,7 +19,7 @@ MAX_HASH256_VALUE = int('f'*64, 16)
 MAX_NONCE_VALUE = 2 ** 64
 
 # https://ethereumclassic.org/blog/2023-03-15-the-ethereum-classic-mining-difficulty-adjustment-explained
-IDEAL_BLOCK_TIME_SECONDS = 13
+IDEAL_BLOCK_TIME_SECONDS = 10
 
 
 def preprocess_string(string):
@@ -49,13 +49,6 @@ def generate_target256_hash(parent_difficulty):
     # here `#066x` 66 is because 64 hex-digits +2 symbols for 0x
     return format(MAX_HASH256_VALUE // int(parent_difficulty), '#066x')
 
-
-# def generate_block_header(parent_hash, timestamp, block_number, difficulty, beneficiary):
-
-#     return {
-#         'parent_hash': parent_hash, 'timestamp': timestamp, 'block_number': block_number,
-#         'difficulty': difficulty, 'beneficiary': beneficiary
-#     }
 
 def adjust_difficulty(current_timestamp, parent_timestamp, parent_difficulty):
 
@@ -90,12 +83,7 @@ def _find_new_block_hash(
         new_block_header = {
             'parent_hash': parent_hash,
             'timestamp': str(current_timestamp),
-            'block_number': new_block_number,
-            # 'difficulty': adjust_difficulty(
-            #     current_timestamp,
-            #     parent_timestamp,
-            #     parent_difficulty
-            # ),
+            'block_number': new_block_number,           
             'difficulty': parent_difficulty + 1,  # temp solution
             'beneficiary': beneficiary,
             'transaction_root': transaction_root_hash,
@@ -224,41 +212,7 @@ def mine_block(blockchain, account, state):
     blockchain.append_block(new_block)
 
     return blockchain.blockchain
-
-    # while True:
-
-    #     # this is a partial new block header (without nonce)
-    #     new_block_header = {
-    #         'parent_hash': parent_hash,
-    #         'timestamp': str(datetime.datetime.now()),
-    #         'block_number': new_block_number,
-    #         'difficulty': parent_header['difficulty'] + 1,  # temp solution
-    #         'beneficiary': beneficiary
-    #     }
-
-    #     # generate the hash value for the new block header
-    #     new_header_hash = generate_keccak256_hash(new_block_header)
-
-    #     # calculate random nonce for PoW
-    #     # See ref. p46 Mastering Ethereum Antonopoulos
-    #     nonce = random.randint(0, MAX_NONCE_VALUE)
-
-    #     # calcualate the hash value for a given timestamp and given nonce
-    #     current_hash = generate_keccak256_hash(new_header_hash + str(nonce))
-
-    #     if (current_hash < target_hash):
-    #         break
-
-    # # nonce is now added to the `new_block_header`
-    # new_block_header['nonce'] = nonce
-
-    # # return a new block
-    # return {
-    #     'header': new_block_header,
-    #     'trasactions' : []
-    #     }
-
-    # pass
+   
 
 
 def pow_requirement_met(parent_header, child_header):
@@ -421,43 +375,3 @@ def block_is_valid(parent_block, child_block):
 
     print('***** BLOCK IS VALID  **********')
     return True
-
-
-# def synchronize_blockchain(blockchain, url):
-#     ''' synchronizing the local blockchain with the latest version of the blockchain'''
-
-#     try:
-#         response = blockchain.synchronize(
-#             peer_url=url)
-
-#         status = blockchain.update_blockchain(response)
-
-#         if status:
-#             return blockchain.blockchain
-#         else:
-#             return "ERROR: FAILS TO UPDATE THE BLOCKCHAIN"
-
-#     except ValueError as e:
-#         return e
-
-# def process_transaction(transaction, state):
-#     pass
-
-
-# if __name__ == "__main__":
-
-#     genesis_block = {
-#         'header': {
-#             'parent_hash': 'na_genesis_block',
-#             'timestamp': 'na_genesis_block',
-#             'block_number': 0,
-#             'difficulty': 1,
-#             'beneficiary': 'na_genesis_block'},
-#         'nonce': 0,
-#         'transactions': []
-#     }
-
-#     # generate_keccak256_hash(genesis_block)
-#     res = preprocess_string(genesis_block)
-
-#     print(f"res= {res}")

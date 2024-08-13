@@ -74,11 +74,7 @@ class State():
         self._update_account_balance(beneficiary_address, beneficiary_balance)
 
     def _update_state_new_shipment(self, transaction):
-        ''' Update state by adding a new shipment '''
-        
-        
-    
-        
+        ''' Update state by adding a new shipment '''       
         
         # https://stackoverflow.com/questions/24804453/how-can-i-copy-a-python-string
         transaction_id = (transaction['body']['id']+'.')[:-1]        

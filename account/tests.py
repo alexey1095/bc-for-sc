@@ -46,6 +46,8 @@ class AccountTests(TestCase):
             self.account.address, self.message, sig)
 
         self.assertEqual(res, True)
+        
+        
 
     def test_verify_invalid_signature(self):
 
@@ -60,10 +62,7 @@ class AccountTests(TestCase):
 
     def test_generate_currency_transacion(self):
 
-        # t = self.account.generate_transaction(
-        #     to='some_address',
-        #     amount=1000, data='test_data')
-        
+            
         t = self.account.generate_currency_transaction(
             to='some_address',
             amount=1000, data='test_data')
@@ -72,20 +71,13 @@ class AccountTests(TestCase):
 
     def test_generate_account_transacion(self):
 
-        # t = self.account.generate_transaction(
-        #     to='some_address',
-        #     amount=1000)
-        
         t = self.account.generate_account_transaction()
 
         pprint(t)
 
     def test_verify_valid_currency_transacion(self):
 
-        # t = self.account.generate_transaction(
-        #     to=self.account2.address,
-        #     amount=1000)
-        
+             
         t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=1000)
@@ -96,9 +88,6 @@ class AccountTests(TestCase):
 
     def test_verify_invalid_currency_transacion(self):
 
-        # t = self.account.generate_transaction(
-        #     to='some_address',
-        #     amount=1000)
         
         t = self.account.generate_currency_transaction(
             to='some_address',
@@ -114,9 +103,6 @@ class AccountTests(TestCase):
 
     def test_add_currency_transaction_to_pool(self):
 
-        # t = self.account.generate_transaction(
-        #     to=self.account2.address,
-        #     amount=1000)
         
         t = self.account.generate_currency_transaction(
             to=self.account2.address,
@@ -133,10 +119,7 @@ class AccountTests(TestCase):
 
     def test_add_account_transaction_to_pool(self):
 
-        # t = self.account.generate_transaction(
-        #     to=self.account2.address,
-        #     amount=1000)
-        
+    
         t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=1000)
@@ -151,10 +134,7 @@ class AccountTests(TestCase):
 
     def test_balance_is_correctly_updated_as_result_of_transaction(self):
        
-        # t = self.account.generate_transaction(
-        #     to=self.account2.address,
-        #     amount=100)
-        
+     
         t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=100)
@@ -177,10 +157,7 @@ class AccountTests(TestCase):
         
     def test_sending_transaction_to_invalid_account(self):
         
-           
-        # t = self.account.generate_transaction(
-        #     to='invalid_address',
-        #     amount=100)
+       
         
         t = self.account.generate_currency_transaction(
             to='invalid_address',
@@ -189,30 +166,10 @@ class AccountTests(TestCase):
         res = self.account.add_transaction_to_pool(t)
         
         self.assertEqual(res, False)
-        
-        
-    def test_sending_transaction_to_invalid_account(self):
-        
-           
-        # t = self.account.generate_transaction(
-        #     to='invalid_address',
-        #     amount=100)
-        
-        t = self.account.generate_currency_transaction(
-            to='invalid_address',
-            amount=100)
-
-        res = self.account.add_transaction_to_pool(t)
-        
-        self.assertEqual(res, False)
-        
+         
     
     def test_sending_invalid_amount(self):
-       
-        # t = self.account.generate_transaction(
-        #     to=self.account2.address,
-        #     amount=10000000)
-        
+          
         t = self.account.generate_currency_transaction(
             to=self.account2.address,
             amount=10000000)
@@ -220,22 +177,3 @@ class AccountTests(TestCase):
         res = self.account.add_transaction_to_pool(t)
         
         self.assertEqual(res, False)
-
-       
-        
-        
-        
-        
-        
-        
-
-
-#  -------------------------------------------------------------------------------
-
-    # def test_verify_valid_signature_for_same_date_with_different_formatting(self):
-
-    #     sig1 = self.account.generate_signature(self.message)
-
-    #     sig2 = self.account.generate_signature(self.message_different_formating)
-
-    #     self.assertEqual(sig1, sig2)

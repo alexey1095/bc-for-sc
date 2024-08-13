@@ -12,12 +12,6 @@ from state.state import State
 from shipment.shipment_status import ShipmentStatus
 
 
-# class TransactionType(Enum):
-
-#     CURRENCY_TRANSACTION = 'CURRENCY_TRANSACTION'
-#     NEW_ACCOUNT_TRANSACTION = 'NEW_ACCOUNT_TRANSACTION'
-
-
 class Account:
     ''' Account class defines key attributes and methods '''
 
@@ -69,44 +63,7 @@ class Account:
             return False
 
         return True
-
-    # def generate_transaction(self, to, amount=0, data={}):
-
-    #     # txtx = transact_type.name
-
-    #     if to:
-
-    #         transact_type = TransactionType.CURRENCY_TRANSACTION.name
-
-    #         body = {
-    #             'id': str(uuid4()),
-    #             'type': transact_type,
-    #             'from': self.address,
-    #             'to': to,
-    #             'amount': amount,
-    #             'data': data
-    #         }
-    #         signature = self.generate_signature(body)
-
-    #         return {
-    #             'body': body,
-    #             'signature': signature
-    #         }
-
-    #     else:
-
-    #         transact_type = TransactionType.NEW_ACCOUNT_TRANSACTION.name
-
-    #         body = {
-    #             'id': str(uuid4()),
-    #             'type': transact_type,
-    #             'address': self.address,
-    #             'balance': self.balance
-    #         }
-
-    #         return {
-    #             'body': body,
-    #         }
+  
 
     def generate_currency_transaction(self, to, amount, data=None):
         ''' Generate a currency transaction '''
@@ -160,54 +117,7 @@ class Account:
             'body': body,
         }
 
-    # def create_new_shipment(self, vendor, buyer,
-    #                         product_description,
-    #                         qty,
-    #                         price, contract_number):
-
-    #     #  NOTE: this will need to be moved to `api`
-
-    #     # check if both buyer and vendor exit in `state`
-    #     buyer_balance = self.state._retrieve_account_balance(buyer)
-
-    #     if not buyer_balance:
-    #         print('Error: -- create_new_shipment')
-    #         print(f'Buyer does not exist in state - address: {buyer}')
-    #         return False
-
-    #     if not self.state._retrieve_account_balance(vendor):
-    #         print('Error: -- create_new_shipment')
-    #         print(f'Vendor does not exist in state - address: {vendor}')
-    #         return False
-
-    #     #  check if `buyer` has enough money
-    #     if buyer_balance < price:
-    #         print('Error: -- create_new_shipment')
-    #         print(f'Buyer does not have enough money to create a new shipemnt - balance: {
-    #               buyer_balance} - address: {buyer}')
-    #         return False
-
-    #     self._generate_new_shipment_transaction(
-    #         vendor=vendor,
-    #         buyer=buyer,
-    #         product_description=product_description,
-    #         qty=qty,
-    #         price=price,
-    #         contract_number=contract_number
-    #     )
-
-    #    if not account.add_transaction_to_pool(tt):
-#         return {
-#             'Error':'Transaction is not valid',
-#             'Details':tt}
-
-
-#     # tt_encoded = json.dumps(tt)
-#     tt_encoded = str(tt)
-
-#     blockchain.redis.publish_transaction(tt_encoded)
-
-        # return True
+    
 
     def generate_new_shipment_transaction(self, vendor, buyer,
                                           product_description,
@@ -399,16 +309,7 @@ class Account:
             pprint(transaction)
             print(f'Transaction sender : {transaction_sender} is not vendor {vendor}')
             return False
-        
-        
-        # if transaction_status != ShipmentStatus.SHIPMENT_CONFIRMED.name:
-        #     print({'\nERROR':'Wrong transaction status '})
-        #     pprint(transaction)
-        #     print(f'Transaction status : {transaction_status} is not  {ShipmentStatus.SHIPMENT_CONFIRMED.name}')
-        #     return False
-            
-        
-        
+                 
         return True
             
         
@@ -462,11 +363,7 @@ class Account:
         transaction_id = (transaction['body']['id']+'.')[:-1]
 
         transaction_type = transaction['body']['type']
-
-        # if transaction_type == TransactionType.CURRENCY_TRANSACTION.name:
-        #     if not self.currency_transaction_is_valid(transaction):
-        #         return False
-        # # elif transaction_type == TransactionType.NEW_ACCOUNT_TRANSACTION.name:
+      
 
         match transaction_type:
 
@@ -502,22 +399,7 @@ class Account:
         self.transaction_pool[transaction_id] = transaction.copy()
 
         return True
-
-    # def add_create_shipment_txn_to_pool(self, transaction):
-
-    #     # https://stackoverflow.com/questions/24804453/how-can-i-copy-a-python-string
-    #     transaction_id = (transaction['body']['id']+'.')[:-1]
-
-    #     transaction_type = transaction['body']['type']
-
-    #     if transaction_type == TransactionType.CURRENCY_TRANSACTION.name:
-    #         if not self.currency_transaction_is_valid(transaction):
-    #             return False
-    #     # elif transaction_type == TransactionType.NEW_ACCOUNT_TRANSACTION.name:
-
-    #     self.transaction_pool[transaction_id] = transaction.copy()
-
-    #     return True
+  
 
     def return_transaction_pool(self):
 
@@ -542,37 +424,3 @@ class Account:
                 self.transaction_pool.pop(t)
                 print(t)
                 
-                
-    
-
-
-# if __name__ == "__main__":
-
-#     account = Account()
-
-#     txt = "test message"
-
-#     sig = account.generate_signature(str.encode(txt))
-
-#     print('signature:')
-#     print(sig)
-
-
-#     #  example valid signature
-#     res = account.verify_signature(account.address, str.encode(txt), sig)
-
-#     print(res)
-
-
-#     txt1='ssssss'
-
-#     #  example invalid signature
-#     res = account.verify_signature(account.address, str.encode(txt1), sig)
-
-#     print(res)
-
-    # t = account.generate_transaction(
-    #     transact_type=TransactionType.CURRENCY_TRANSACTION,
-    #     to='somebody',amount=1000,data='test_data')
-
-    # print(t)

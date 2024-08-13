@@ -1,0 +1,296 @@
+Found 1 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: account, api, blockchain, daphne, django_bootstrap5, messages, node, pubsub, shipment, state, staticfiles, transactions
+  Apply all migrations: admin, auth, contenttypes, sessions
+Running pre-migrate handlers for application admin
+Running pre-migrate handlers for application auth
+Running pre-migrate handlers for application contenttypes
+Running pre-migrate handlers for application sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK (0.004s)
+  Applying auth.0001_initial... OK (0.014s)
+  Applying admin.0001_initial... OK (0.005s)
+  Applying admin.0002_logentry_remove_auto_add... OK (0.007s)
+  Applying admin.0003_logentry_add_action_flag_choices... OK (0.006s)
+  Applying contenttypes.0002_remove_content_type_name... OK (0.011s)
+  Applying auth.0002_alter_permission_name_max_length... OK (0.008s)
+  Applying auth.0003_alter_user_email_max_length... OK (0.006s)
+  Applying auth.0004_alter_user_username_opts... OK (0.004s)
+  Applying auth.0005_alter_user_last_login_null... OK (0.006s)
+  Applying auth.0006_require_contenttypes_0002... OK (0.001s)
+  Applying auth.0007_alter_validators_add_error_messages... OK (0.004s)
+  Applying auth.0008_alter_user_username_max_length... OK (0.011s)
+  Applying auth.0009_alter_user_last_name_max_length... OK (0.006s)
+  Applying auth.0010_alter_group_name_max_length... OK (0.006s)
+  Applying auth.0011_update_proxy_permissions... OK (0.004s)
+  Applying auth.0012_alter_user_first_name_max_length... OK (0.006s)
+  Applying sessions.0001_initial... OK (0.002s)
+Running post-migrate handlers for application admin
+Adding content type 'admin | logentry'
+Adding permission 'Permission object (1)'
+Adding permission 'Permission object (2)'
+Adding permission 'Permission object (3)'
+Adding permission 'Permission object (4)'
+Running post-migrate handlers for application auth
+Adding content type 'auth | permission'
+Adding content type 'auth | group'
+Adding content type 'auth | user'
+Adding permission 'Permission object (5)'
+Adding permission 'Permission object (6)'
+Adding permission 'Permission object (7)'
+Adding permission 'Permission object (8)'
+Adding permission 'Permission object (9)'
+Adding permission 'Permission object (10)'
+Adding permission 'Permission object (11)'
+Adding permission 'Permission object (12)'
+Adding permission 'Permission object (13)'
+Adding permission 'Permission object (14)'
+Adding permission 'Permission object (15)'
+Adding permission 'Permission object (16)'
+Running post-migrate handlers for application contenttypes
+Adding content type 'contenttypes | contenttype'
+Adding permission 'Permission object (17)'
+Adding permission 'Permission object (18)'
+Adding permission 'Permission object (19)'
+Adding permission 'Permission object (20)'
+Running post-migrate handlers for application sessions
+Adding content type 'sessions | session'
+Adding permission 'Permission object (21)'
+Adding permission 'Permission object (22)'
+Adding permission 'Permission object (23)'
+Adding permission 'Permission object (24)'
+System check identified no issues (0 silenced).
+"
+-----------Function _find_new_block_hash ----------"
+New block:
+{'header': {'beneficiary': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+            'block_number': 1,
+            'difficulty': 4,
+            'nonce': 3367021770019655550,
+            'parent_hash': '0x7900e3677c91fb1ae67dfd649e3cf19883ce0798536a57a4d0689e25095a3294',
+            'state_root': '0xb48d38f93eaa084033fc5970bf96e559c33c4cdc07d889ab00b4d63f9590739d',
+            'timestamp': '2024-08-11 19:20:14.504375',
+            'transaction_root': '0x6c604dcf9ff58c3482abb5d9dd818878b3e9c32f30adc57bdbcda5062582f13d'},
+ 'transactions': {'0c2f3126-da4b-4421-91a8-7f44c89e2f42': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                                    'balance': 100000,
+                                                                    'id': '0c2f3126-da4b-4421-91a8-7f44c89e2f42',
+                                                                    'type': 'NEW_ACCOUNT_TRANSACTION'}},
+                  '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9': {'body': {'amount': 100,
+                                                                    'id': '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9',
+                                                                    'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'type': 'BLOCK_REWARD_TRANSACTION'}},
+                  'a1e6b458-bb9c-4faf-8fc0-b46c1753274d': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'balance': 100000,
+                                                                    'id': 'a1e6b458-bb9c-4faf-8fc0-b46c1753274d',
+                                                                    'type': 'NEW_ACCOUNT_TRANSACTION'}}}}
+"
+-----------END of Function _find_new_block_hash ----------"
+
+***** BLOCK VALIDATION *****
+- Block number is correct... OK
+- Parent hash is correct... OK
+- PoW requirement is met... OK
+***** BLOCK IS VALID  **********
+
+ function remove_transactions_added_to_block()
+{'0c2f3126-da4b-4421-91a8-7f44c89e2f42': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                   'balance': 100000,
+                                                   'id': '0c2f3126-da4b-4421-91a8-7f44c89e2f42',
+                                                   'type': 'NEW_ACCOUNT_TRANSACTION'}},
+ '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9': {'body': {'amount': 100,
+                                                   'id': '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9',
+                                                   'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'type': 'BLOCK_REWARD_TRANSACTION'}},
+ 'a1e6b458-bb9c-4faf-8fc0-b46c1753274d': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'balance': 100000,
+                                                   'id': 'a1e6b458-bb9c-4faf-8fc0-b46c1753274d',
+                                                   'type': 'NEW_ACCOUNT_TRANSACTION'}}}
+print t:a1e6b458-bb9c-4faf-8fc0-b46c1753274d
+a1e6b458-bb9c-4faf-8fc0-b46c1753274d
+print t:0c2f3126-da4b-4421-91a8-7f44c89e2f42
+0c2f3126-da4b-4421-91a8-7f44c89e2f42
+print t:7f0dcc4d-80ae-42b4-abc1-131a39fab5d9
+7f0dcc4d-80ae-42b4-abc1-131a39fab5d9
+
+ >>>>>>>>>>> BLOCK HAS BEEN ADDED TO BLOCKCHAIN <<<<<<<<<<<
+
+channel_key_processed 
+['c54db7dcca6b4bdda3ae707afc13c853', 'block']
+
+node_name c54db7dcca6b4bdda3ae707afc13c853
+
+channel block
+
+channel_key_processed 
+['c54db7dcca6b4bdda3ae707afc13c853', 'block']
+
+node_name c54db7dcca6b4bdda3ae707afc13c853
+
+channel block
+
+***** NEW MESSAGE RECEIVED *****
+Sending node: c54db7dcca6b4bdda3ae707afc13c853
+Channel: block
+Message content:
+{'header': {'beneficiary': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+            'block_number': 1,
+            'difficulty': 4,
+            'nonce': 3367021770019655550,
+            'parent_hash': '0x7900e3677c91fb1ae67dfd649e3cf19883ce0798536a57a4d0689e25095a3294',
+            'state_root': '0xb48d38f93eaa084033fc5970bf96e559c33c4cdc07d889ab00b4d63f9590739d',
+            'timestamp': '2024-08-11 19:20:14.504375',
+            'transaction_root': '0x6c604dcf9ff58c3482abb5d9dd818878b3e9c32f30adc57bdbcda5062582f13d'},
+ 'transactions': {'0c2f3126-da4b-4421-91a8-7f44c89e2f42': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                                    'balance': 100000,
+                                                                    'id': '0c2f3126-da4b-4421-91a8-7f44c89e2f42',
+                                                                    'type': 'NEW_ACCOUNT_TRANSACTION'}},
+                  '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9': {'body': {'amount': 100,
+                                                                    'id': '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9',
+                                                                    'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'type': 'BLOCK_REWARD_TRANSACTION'}},
+                  'a1e6b458-bb9c-4faf-8fc0-b46c1753274d': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'balance': 100000,
+                                                                    'id': 'a1e6b458-bb9c-4faf-8fc0-b46c1753274d',
+                                                                    'type': 'NEW_ACCOUNT_TRANSACTION'}}}}
+***** END OF MESSAGE *****
+"
+-----------Function _find_new_block_hash ----------"
+New block:
+{'header': {'beneficiary': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+            'block_number': 2,
+            'difficulty': 5,
+            'nonce': 15748459736711020125,
+            'parent_hash': '0x3678fee3607d00cc3680d516093f2b1f2a2fe08ee4f7c419fb71256dea63c34f',
+            'state_root': '0x2c63417c22c6961dd667bae2e776a5506e9bf3763eaa2110cf7c2593afa5f13f',
+            'timestamp': '2024-08-11 19:20:14.515284',
+            'transaction_root': '0xed6f9992c19b03b5dbb2eb5dbfc8a4d87fb9a4bef7e07b80aabae07e9e44c20e'},
+ 'transactions': {'eaff2dad-7f6f-4edd-8531-7459cd4ba4da': {'body': {'amount': 100,
+                                                                    'data': {},
+                                                                    'from': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'id': 'eaff2dad-7f6f-4edd-8531-7459cd4ba4da',
+                                                                    'to': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                                    'type': 'CURRENCY_TRANSACTION'},
+                                                           'signature': '30450221009795f65c7186b94b1cce24316ed48a3a1f952a2855c95e5e1b9a8f511b1908bf0220120a2e0c6b888c463253048c49ec161f7832fcf0d9f2a8de12960af763a92a21'},
+                  'ff39fbc7-71ba-432f-92fd-9034be4b74eb': {'body': {'amount': 100,
+                                                                    'id': 'ff39fbc7-71ba-432f-92fd-9034be4b74eb',
+                                                                    'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'type': 'BLOCK_REWARD_TRANSACTION'}}}}
+"
+-----------END of Function _find_new_block_hash ----------"
+
+***** BLOCK VALIDATION *****
+- Block number is correct... OK
+- Parent hash is correct... OK
+- Difficulty is correct... OK
+- PoW requirement is met... OK
+***** BLOCK IS VALID  **********
+
+ function remove_transactions_added_to_block()
+{'eaff2dad-7f6f-4edd-8531-7459cd4ba4da': {'body': {'amount': 100,
+                                                   'data': {},
+                                                   'from': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'id': 'eaff2dad-7f6f-4edd-8531-7459cd4ba4da',
+                                                   'to': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                   'type': 'CURRENCY_TRANSACTION'},
+                                          'signature': '30450221009795f65c7186b94b1cce24316ed48a3a1f952a2855c95e5e1b9a8f511b1908bf0220120a2e0c6b888c463253048c49ec161f7832fcf0d9f2a8de12960af763a92a21'},
+ 'ff39fbc7-71ba-432f-92fd-9034be4b74eb': {'body': {'amount': 100,
+                                                   'id': 'ff39fbc7-71ba-432f-92fd-9034be4b74eb',
+                                                   'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'type': 'BLOCK_REWARD_TRANSACTION'}}}
+print t:eaff2dad-7f6f-4edd-8531-7459cd4ba4da
+eaff2dad-7f6f-4edd-8531-7459cd4ba4da
+print t:ff39fbc7-71ba-432f-92fd-9034be4b74eb
+ff39fbc7-71ba-432f-92fd-9034be4b74eb
+
+ >>>>>>>>>>> BLOCK HAS BEEN ADDED TO BLOCKCHAIN <<<<<<<<<<<
+
+channel_key_processed 
+['c54db7dcca6b4bdda3ae707afc13c853', 'block']
+
+node_name c54db7dcca6b4bdda3ae707afc13c853
+
+channel block
+
+***** BLOCK VALIDATION *****
+- Block number is correct... OK
+- Parent hash is correct... OK
+- PoW requirement is met... OK
+***** BLOCK IS VALID  **********
+
+ function remove_transactions_added_to_block()
+{'0c2f3126-da4b-4421-91a8-7f44c89e2f42': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                   'balance': 100000,
+                                                   'id': '0c2f3126-da4b-4421-91a8-7f44c89e2f42',
+                                                   'type': 'NEW_ACCOUNT_TRANSACTION'}},
+ '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9': {'body': {'amount': 100,
+                                                   'id': '7f0dcc4d-80ae-42b4-abc1-131a39fab5d9',
+                                                   'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'type': 'BLOCK_REWARD_TRANSACTION'}},
+ 'a1e6b458-bb9c-4faf-8fc0-b46c1753274d': {'body': {'address': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'balance': 100000,
+                                                   'id': 'a1e6b458-bb9c-4faf-8fc0-b46c1753274d',
+                                                   'type': 'NEW_ACCOUNT_TRANSACTION'}}}
+print t:a1e6b458-bb9c-4faf-8fc0-b46c1753274d
+print t:0c2f3126-da4b-4421-91a8-7f44c89e2f42
+print t:7f0dcc4d-80ae-42b4-abc1-131a39fab5d9
+
+ >>>>>>>>>>> BLOCK HAS BEEN ADDED TO BLOCKCHAIN <<<<<<<<<<<
+
+channel_key_processed 
+['c54db7dcca6b4bdda3ae707afc13c853', 'block']
+
+node_name c54db7dcca6b4bdda3ae707afc13c853
+
+channel block
+
+***** NEW MESSAGE RECEIVED *****
+Sending node: c54db7dcca6b4bdda3ae707afc13c853
+Channel: block
+Message content:
+{'header': {'beneficiary': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+            'block_number': 2,
+            'difficulty': 5,
+            'nonce': 15748459736711020125,
+            'parent_hash': '0x3678fee3607d00cc3680d516093f2b1f2a2fe08ee4f7c419fb71256dea63c34f',
+            'state_root': '0x2c63417c22c6961dd667bae2e776a5506e9bf3763eaa2110cf7c2593afa5f13f',
+            'timestamp': '2024-08-11 19:20:14.515284',
+            'transaction_root': '0xed6f9992c19b03b5dbb2eb5dbfc8a4d87fb9a4bef7e07b80aabae07e9e44c20e'},
+ 'transactions': {'eaff2dad-7f6f-4edd-8531-7459cd4ba4da': {'body': {'amount': 100,
+                                                                    'data': {},
+                                                                    'from': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'id': 'eaff2dad-7f6f-4edd-8531-7459cd4ba4da',
+                                                                    'to': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                                    'type': 'CURRENCY_TRANSACTION'},
+                                                           'signature': '30450221009795f65c7186b94b1cce24316ed48a3a1f952a2855c95e5e1b9a8f511b1908bf0220120a2e0c6b888c463253048c49ec161f7832fcf0d9f2a8de12960af763a92a21'},
+                  'ff39fbc7-71ba-432f-92fd-9034be4b74eb': {'body': {'amount': 100,
+                                                                    'id': 'ff39fbc7-71ba-432f-92fd-9034be4b74eb',
+                                                                    'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                                    'type': 'BLOCK_REWARD_TRANSACTION'}}}}
+***** END OF MESSAGE *****
+
+***** BLOCK VALIDATION *****
+- Block number is correct... OK
+- Parent hash is correct... OK
+- Difficulty is correct... OK
+- PoW requirement is met... OK
+***** BLOCK IS VALID  **********
+
+ function remove_transactions_added_to_block()
+{'eaff2dad-7f6f-4edd-8531-7459cd4ba4da': {'body': {'amount': 100,
+                                                   'data': {},
+                                                   'from': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'id': 'eaff2dad-7f6f-4edd-8531-7459cd4ba4da',
+                                                   'to': '3056301006072a8648ce3d020106052b8104000a0342000404a0280e5ef6c11d44d455ca3a423f2c97286859f1d1309a14747a8bb393c1e9db248d5f35b904098de5e1060a0e91c484f724e6afe4d463065c4be36a8f7b62',
+                                                   'type': 'CURRENCY_TRANSACTION'},
+                                          'signature': '30450221009795f65c7186b94b1cce24316ed48a3a1f952a2855c95e5e1b9a8f511b1908bf0220120a2e0c6b888c463253048c49ec161f7832fcf0d9f2a8de12960af763a92a21'},
+ 'ff39fbc7-71ba-432f-92fd-9034be4b74eb': {'body': {'amount': 100,
+                                                   'id': 'ff39fbc7-71ba-432f-92fd-9034be4b74eb',
+                                                   'to': '3056301006072a8648ce3d020106052b8104000a03420004ed90dbfff528ab21cf5ff039aee933cc502c10591f3de8fdefe79c91da9c098b51083bb3ac332618e27b381ac6001c413f15befa8a9e85b6cc9d1b6b4a548d29',
+                                                   'type': 'BLOCK_REWARD_TRANSACTION'}}}
+print t:eaff2dad-7f6f-4edd-8531-7459cd4ba4da
+print t:ff39fbc7-71ba-432f-92fd-9034be4b74eb
+
+ >>>>>>>>>>> BLOCK HAS BEEN ADDED TO BLOCKCHAIN <<<<<<<<<<<

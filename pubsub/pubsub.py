@@ -6,10 +6,6 @@ import ast
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-# from blockchain.blockchain import Blockchain
-# from account.account import Account
-# from account.account import Account
-
 
 class Channel(Enum):
     DEV = 'dev'
@@ -37,17 +33,6 @@ class RedisPubSub():
 
         self.thread = self.reader.run_in_thread(sleep_time=0.01)
 
-        # print(Channel.DEV)
-
-    # def subscribe(self):
-    #     ''' subscribe to all pre-defined channels'''
-
-    #     if not self.redis:
-    #         return False
-
-    #     for channel in self.channels:
-    #         self.reader.psubscribe(
-    #             **{'*:' + f'{channel}': self._message_handler})
 
     def subscribe(self):
         ''' subscribe to all pre-defined channels'''
@@ -155,9 +140,7 @@ class RedisPubSub():
             return
         
         
-        self._process_received_payload(channel, dict_msg_data)
-
-      
+        self._process_received_payload(channel, dict_msg_data)   
                 
                 
                 
@@ -178,73 +161,3 @@ class RedisPubSub():
         self.reader.close()
         self.redis.close()
 
-    # def publish_block(self):
-
-
-# if __name__ == "__main__":
-
-#     foo = RedisPubSub('node1')
-
-#     print("Hello1")
-#     print("Hello2")
-#     print("Hello3")
-#     print("Hello4")
-#     print("Hello5")
-#     print("Hello6")
-#     print("Hello7")
-#     print("Hello7")
-#     print("Hello7")
-#     print("Hello7")
-
-#     foo.publish_dev(msg='Hello word!')
-
-#     foo.close()
-
-
-# import redis
-# from pprint import pprint
-
-
-# # redis python development documentaqtion
-# # https://redis-py.readthedocs.io/en/stable/index.html
-
-
-# class PubSub:
-
-#     def __init__(self):
-#         # self.publisher = None
-#         # self.subscriber = None
-#         # self.redis_server = None
-#         pass
-
-#     def connect_and_subscribe(self):
-
-#         self.redis = redis.Redis(host='localhost', port=6379)
-
-#         try:
-#            self.redis.ping()
-#         except Exception as e:
-#             print(f'Error: Redis server - {e}')
-#             return False
-
-#         self.reader = self.redis.pubsub()
-
-#         self.reader.subscribe('blockchain')
-
-
-#         kwargs = self.redis.get_connection_kwargs()
-#         print('***** Connected to Redis server.')
-#         print(f'Server IP: {kwargs['host']}')
-#         print(f'Server port: {kwargs['port']}')
-
-
-#         return True
-
-#     def publich_blockchain(self,blockchain):
-
-#         self.redis.publish('blockchain',blockchain)
-
-
-#     # def publish(self, message ):
-
-#     #     self.publisher.

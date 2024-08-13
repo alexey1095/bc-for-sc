@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'blockchain',
     'pubsub',
     'account',
-    'transactions',
+    # 'transactions',
     'state',
     'shipment',
     "django_bootstrap5",

@@ -31,9 +31,6 @@ class Blockchain:
         #  init blockchain with genesis block
         self.blockchain = [genesis_block,]
 
-        #  this is a peer url that can provide the latest version of the blockchain
-        # self.peer_url = peer_url
-
         #  unique randomly generated node's id
         self.node_id = uuid4().hex
         
@@ -44,14 +41,7 @@ class Blockchain:
         self.state = state
         
         self.block_reward = 100
-        
-       
-
-    # def redis_block_channel_handler(self, payload):
-    #     ''' this is a callback function from the `RedisPubSub` class fro the `BLOCK` channel'''
-
-    #     print("this is redis handler from Blockchain class")
-    #     pprint(payload)
+    
 
     def _synchronize(self, peer_url):
         ''' getting the latest version of the blockchain '''
